@@ -1,0 +1,168 @@
+/* Styles pour l'expérience guidée d'illusions d'optique */
+
+/* Panneau modal de base */
+/* Panneau modal de base */
+.modal-panel {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white !important;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    padding: 25px;
+    max-width: 80%;
+    max-height: 90%;
+    overflow-y: auto;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+/* Panneau d'explication */
+#explanation-panel {
+    text-align: center;
+    min-width: 40%;
+}
+
+#explanation-panel h2 {
+    margin-top: 0;
+    color: #333;
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+#explanation-panel p {
+    font-size: 16px;
+    line-height: 1.5;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+/* Panneau de jeu */
+.game-panel {
+    padding: 20px;
+    width: 80%;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.game-content {
+    width: 100%;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Contrôles de jeu */
+.controls {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    max-width: 400px;
+    margin: 15px 0;
+}
+
+.controls div {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.controls label {
+    font-size: 14px;
+    color: #555;
+}
+
+.controls input[type="range"] {
+    width: 100%;
+}
+
+.controls button {
+    padding: 8px 15px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.controls button:hover {
+    background-color: #2980b9;
+}
+
+/* Explications sous les jeux */
+.explanation {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 14px;
+    color: #555;
+    line-height: 1.4;
+}
+
+.explanation p {
+    margin: 5px 0;
+}
+
+/* Boutons */
+button {
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+/* Animation des transitions */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s forwards;
+}
+
+.fade-out {
+    animation: fadeOut 0.5s forwards;
+}
+
+/* Canvas de jeu */
+canvas {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    max-width: 100%;
+}
+
+/* Overlay de transition */
+#fade-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    z-index: 9000; /* Inférieur au z-index des panneaux */
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+}

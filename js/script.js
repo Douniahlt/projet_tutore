@@ -63,7 +63,7 @@ function createMenuElements() {
     mainTitle.style.zIndex = '100';
     mainTitle.textContent = 'COLOR PERCEPTION';
     
-    // Panneau inférieur (comme Evolution of Trust)
+    // Panneau inférieur
     const bottomPanel = document.createElement('div');
     bottomPanel.style.position = 'absolute';
     bottomPanel.style.bottom = '0';
@@ -662,6 +662,10 @@ style.innerHTML = `
     }
 `;
 document.head.appendChild(style);
+
+// À la fin de script.js
+window.myCamera = camera;
+window.myControls = controls;
 
 // Démarrer l'animation
 animate();
