@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Color Perception - Gallery</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="gallery.css">
+</head>
+<body>
+    <canvas id="gallery-canvas"></canvas>
+    
+    <div class="gallery-ui">
+        <button class="nav-button" id="prev-btn">‹</button>
+        <div class="progress-indicator" id="progress">
+            <div class="progress-dot active"></div>
+            <div class="progress-dot"></div>
+            <div class="progress-dot"></div>
+            <div class="progress-dot"></div>
+            <div class="progress-dot"></div>
+        </div>
+        <button class="nav-button" id="next-btn">›</button>
+    </div>
+    
+    <!-- Bouton de sortie -->
+    <button class="exit-button" id="exit-btn" title="Retour au menu">✕</button>
+    
+    <!-- Panneau d'information -->
+    <div class="info-panel" id="info-panel">
+        <h2 id="checkpoint-title">Introduction au Contraste</h2>
+        <p id="checkpoint-description">Découvrez comment notre perception des couleurs est influencée par leur environnement.</p>
+        <button class="start-game-btn" id="start-game">Commencer l'expérience</button>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="./js/gallery.js"></script>
+</body>
+</html>

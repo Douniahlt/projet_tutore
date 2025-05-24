@@ -4,7 +4,7 @@ import { OrbitControls } from './OrbitControls.js';
 // Initialisation de la scène avec le canvas existant
 const canvas = document.getElementById('canvas');
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xececec); // Fond gris très clair comme Evolution of Trust
+scene.background = new THREE.Color(0xececec);
 
 // Ajustement pour utiliser les dimensions du canvas existant
 const camera = new THREE.PerspectiveCamera(45, canvas.width / canvas.height, 0.1, 100);
@@ -18,7 +18,13 @@ const renderer = new THREE.WebGLRenderer({
 });
 renderer.setSize(canvas.width, canvas.height);
 
-// Ajuster le renderer pour qu'il remplisse la fenêtre
+// Variables pour l'effet portail
+let isInsideCube = false;
+let portalIntensity = 0;
+let cameraInsideProgress = 0;
+let transitionState = 'menu'; // 'menu', 'entering', 'portal', 'transitioning'
+
+
 function updateRendererSize() {
     const width = window.innerWidth;
     const height = window.innerHeight;
@@ -44,9 +50,288 @@ interfaceContainer.style.left = '0';
 interfaceContainer.style.pointerEvents = 'none';
 document.body.appendChild(interfaceContainer);
 
-// Création des éléments d'interface inspirée de Evolution of Trust
+// Shader pour l'effet portail
+const portalShaderMaterial = new THREE.ShaderMaterial({
+    uniforms: {
+        iTime: { value: 0 },
+        iResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+        portalIntensity: { value: 0 },
+        cameraProgress: { value: 0 },
+        blur: { value: 0 }
+    },
+    vertexShader: `
+        varying vec2 vUv;
+        void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+    `,
+    fragmentShader: `
+        uniform float iTime;
+        uniform vec2 iResolution;
+        uniform float portalIntensity;
+        uniform float cameraProgress;
+        uniform float blur;
+        varying vec2 vUv;
+        
+        // Simplifié du shader fourni - Effet tunnel galerie
+        float g(vec4 p, float s) {
+            return abs(dot(sin(p *= s), cos(p.zxwy)) - 1.0) / s;
+        }
+        
+        vec3 getGalleryPalette(float progress) {
+            // Rose doux vers bleu clair vers vert menthe vers lavande
+            if (progress < 0.25) {
+                return mix(vec3(0.95, 0.85, 0.90), vec3(0.85, 0.90, 0.98), progress * 4.0);
+            } else if (progress < 0.5) {
+                return mix(vec3(0.85, 0.90, 0.98), vec3(0.88, 0.95, 0.90), (progress - 0.25) * 4.0);
+            } else if (progress < 0.75) {
+                return mix(vec3(0.88, 0.95, 0.90), vec3(0.92, 0.88, 0.98), (progress - 0.5) * 4.0);
+            } else {
+                return vec3(0.92, 0.88, 0.98);
+            }
+        }
+        
+        void main() {
+            vec4 O;
+            vec2 C = vUv * iResolution.xy;
+            
+            float i = 0.0, d = 0.0, z = 0.0, s = 0.0;
+            float T = iTime + cameraProgress * 5.0;
+            vec4 o = vec4(0.0), q, p;
+            vec4 U = vec4(2.0, 1.0, 0.0, 3.0);
+            vec2 r = iResolution.xy;
+            
+            // Palette de couleur évoluant avec la progression
+            vec3 basePalette = getGalleryPalette(cameraProgress);
+            
+            // Effet tunnel simplifié
+            for(float step = 0.0; step < 50.0; step++) {
+                i = step;
+                z += d + 0.001;
+                q = vec4(normalize(vec3((C + C - r) / r.y, 2.0)) * z, 0.2);
+                q.z += T / 20.0;
+                s = q.y + 0.1;
+                q.y = abs(s);
+                p = q;
+                p.y -= 0.11;
+                
+                // Rotation pour effet tunnel
+                float angle = 11.0 * 2.0 - 2.0 * p.z;
+                float c1 = cos(angle);
+                float s1 = sin(angle);
+                
+                vec2 temp = p.xy;
+                p.x = temp.x * c1 - temp.y * s1;
+                p.y = temp.x * s1 + temp.y * c1;
+                
+                p.y -= 0.2;
+                d = abs(g(p, 6.0) - g(p, 18.0)) / 3.0;
+                
+                // Couleurs pastel évolutives
+                vec4 pastelColors = vec4(
+                    basePalette.r + 0.1 * cos(0.8 * U.x + 3.0 * q.z + iTime * 0.3),
+                    basePalette.g + 0.1 * cos(0.6 * U.y + 4.0 * q.z + iTime * 0.4), 
+                    basePalette.b + 0.1 * cos(0.4 * U.z + 5.0 * q.z + iTime * 0.2),
+                    0.9 + 0.1 * cos(0.5 * U.w + 6.0 * q.z + iTime * 0.1)
+                );
+                
+                p = pastelColors;
+                
+                float multiplier = (s > 0.0 ? 1.0 : 0.1) * p.w;
+                float denominator = max(s > 0.0 ? d : d*d*d, 0.001);
+                o += multiplier * p / denominator;
+            }
+            
+            // Lueur centrale
+            float pulse = (1.2 + sin(T * 0.5) * sin(1.1 * T) * sin(1.6 * T)) * 600.0;
+            vec2 center = q.xy;
+            float centerDist = length(center);
+            if(centerDist > 0.0) {
+                vec4 centerGlow = vec4(basePalette + 0.05, 1.0);
+                o += pulse * centerGlow / centerDist;
+            }
+            
+            // Tone mapping
+            O = tanh(o / 80000.0);
+            O.rgb = pow(O.rgb, vec3(0.9));
+            
+            // Appliquer le flou progressif
+            vec2 blurOffset = vec2(blur * 0.01);
+            vec3 blurredColor = O.rgb;
+            if (blur > 0.1) {
+                // Simulation de flou simple
+                blurredColor *= (1.0 - blur * 0.3);
+                blurredColor = mix(blurredColor, basePalette, blur * 0.5);
+            }
+            
+            // Mélanger avec l'intensité du portail
+            vec3 finalColor = mix(vec3(0.1), blurredColor, portalIntensity);
+            
+            gl_FragColor = vec4(finalColor, portalIntensity);
+        }
+    `,
+    transparent: true,
+    side: THREE.DoubleSide
+});
+
+// FONCTION MODIFIÉE : Transition vers la galerie avec effet portail
+function startGalleryTransition() {
+    console.log('🌀 Démarrage de la transition portail vers la galerie');
+    
+    if (transitionState !== 'menu') return;
+    transitionState = 'entering';
+    
+    // Désactiver les contrôles pendant la transition
+    controls.enabled = false;
+    
+    // Position initiale de la caméra
+    const startPosition = camera.position.clone();
+    
+    // Phase 1: Se rapprocher du cube et révéler le portail
+    if (window.gsap) {
+        console.log('🎬 Animation GSAP : Entrée dans le cube portail');
+        
+        const tl = gsap.timeline();
+        
+        // Phase 1: Se rapprocher et révéler le portail
+        tl.to(camera.position, {
+            duration: 2,
+            x: 0,
+            y: 0.5,
+            z: 2.5,
+            ease: "power2.inOut"
+        })
+        .to(portalShaderMaterial.uniforms.portalIntensity, {
+            duration: 1.5,
+            value: 1.0,
+            ease: "power2.out"
+        }, 0.5)
+        
+        // Phase 2: Entrer dans le cube
+        .to(camera.position, {
+            duration: 2,
+            z: 1,
+            ease: "power2.inOut",
+            onStart: () => {
+                transitionState = 'portal';
+                isInsideCube = true;
+            }
+        })
+        
+        // Phase 3: Progression dans le portail avec flou
+        .to({}, {
+            duration: 3,
+            onUpdate: function() {
+                const progress = this.progress();
+                cameraInsideProgress = progress;
+                portalShaderMaterial.uniforms.cameraProgress.value = progress;
+                portalShaderMaterial.uniforms.blur.value = progress * 2;
+                
+                // Caméra avance dans le tunnel
+                camera.position.z = 1 - progress * 2;
+            },
+            ease: "power2.inOut"
+        })
+        
+        // Phase 4: Transition finale vers la galerie
+        .to({}, {
+            duration: 1,
+            onStart: () => {
+                transitionState = 'transitioning';
+                // Créer l'overlay de transition
+                const transitionOverlay = document.createElement('div');
+                transitionOverlay.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: radial-gradient(circle, transparent 0%, black 70%);
+                    opacity: 0;
+                    z-index: 9999;
+                    transition: opacity 1.5s ease-in-out;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: white;
+                    font-size: 24px;
+                    font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+                    pointer-events: none;
+                `;
+                transitionOverlay.innerHTML = '🌀 Entering the Gallery Portal...';
+                document.body.appendChild(transitionOverlay);
+                
+                setTimeout(() => transitionOverlay.style.opacity = '1', 100);
+                
+                setTimeout(() => {
+                    console.log('✨ Transition vers gallery.html');
+                    window.location.href = 'gallery.html';
+                }, 1500);
+            }
+        });
+        
+    } else {
+        console.log('🔄 Animation fallback : Transition portail');
+        
+        // Fallback sans GSAP
+        let progress = 0;
+        const duration = 6000; // 6 secondes total
+        const startTime = Date.now();
+        
+        function animatePortal() {
+            const elapsed = Date.now() - startTime;
+            progress = Math.min(elapsed / duration, 1);
+            
+            if (progress < 0.3) {
+                // Approche du cube
+                const t = progress / 0.3;
+                camera.position.z = startPosition.z * (1 - t) + 2.5 * t;
+                portalShaderMaterial.uniforms.portalIntensity.value = t;
+            } else if (progress < 0.6) {
+                // Entrée dans le cube
+                const t = (progress - 0.3) / 0.3;
+                camera.position.z = 2.5 * (1 - t) + 1 * t;
+                if (!isInsideCube) {
+                    isInsideCube = true;
+                    transitionState = 'portal';
+                }
+            } else {
+                // Dans le portail
+                const t = (progress - 0.6) / 0.4;
+                cameraInsideProgress = t;
+                portalShaderMaterial.uniforms.cameraProgress.value = t;
+                portalShaderMaterial.uniforms.blur.value = t * 2;
+                camera.position.z = 1 - t * 2;
+            }
+            
+            if (progress < 1) {
+                requestAnimationFrame(animatePortal);
+            } else {
+                // Transition finale
+                const overlay = document.createElement('div');
+                overlay.style.cssText = `
+                    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                    background: black; opacity: 0; z-index: 9999;
+                    transition: opacity 1s ease; display: flex;
+                    align-items: center; justify-content: center;
+                    color: white; font-size: 24px;
+                `;
+                overlay.innerHTML = '🌀 Portal Transition...';
+                document.body.appendChild(overlay);
+                
+                setTimeout(() => overlay.style.opacity = '1', 100);
+                setTimeout(() => window.location.href = 'gallery.html', 1000);
+            }
+        }
+        
+        animatePortal();
+    }
+}
+
+// Création des éléments d'interface (identique mais avec le nouveau bouton)
 function createMenuElements() {
-    // Titre principal en haut (comme Evolution of Trust)
+    // Titre principal
     const mainTitle = document.createElement('div');
     mainTitle.style.position = 'absolute';
     mainTitle.style.top = '5%';
@@ -81,7 +366,7 @@ function createMenuElements() {
     bottomPanel.style.padding = '10px 30px';
     bottomPanel.style.zIndex = '90';
     
-    // Colonne de gauche
+    // Colonne de gauche (Sound)
     const leftColumn = document.createElement('div');
     leftColumn.style.display = 'flex';
     leftColumn.style.flexDirection = 'column';
@@ -114,7 +399,7 @@ function createMenuElements() {
     leftColumn.appendChild(soundTitle);
     leftColumn.appendChild(soundButton);
     
-    // Colonne centrale
+    // Colonne centrale (Titre)
     const centerColumn = document.createElement('div');
     centerColumn.style.display = 'flex';
     centerColumn.style.flexDirection = 'column';
@@ -136,12 +421,12 @@ function createMenuElements() {
     subtitle.style.fontSize = '14px';
     subtitle.style.color = '#666';
     subtitle.style.marginTop = '5px';
-    subtitle.textContent = 'An interactive experience';
+    subtitle.textContent = 'An interactive portal experience';
     
     centerColumn.appendChild(colorPerceptionTitle);
     centerColumn.appendChild(subtitle);
     
-    // Colonne de droite
+    // Colonne de droite (Play - Portal)
     const rightColumn = document.createElement('div');
     rightColumn.style.display = 'flex';
     rightColumn.style.flexDirection = 'column';
@@ -155,7 +440,7 @@ function createMenuElements() {
     playTitle.style.fontSize = '16px';
     playTitle.style.color = '#333';
     playTitle.style.marginBottom = '10px';
-    playTitle.textContent = 'Start Game';
+    playTitle.textContent = 'Enter Portal';
     
     const playButton = document.createElement('div');
     playButton.style.width = '50px';
@@ -169,7 +454,30 @@ function createMenuElements() {
     playButton.style.cursor = 'pointer';
     playButton.style.pointerEvents = 'auto';
     playButton.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)';
-    playButton.innerHTML = '&#9654;';
+    playButton.innerHTML = '🌀'; // Icône portail
+    
+    // EVENT LISTENER pour lancer le portail
+    playButton.addEventListener('click', (event) => {
+        event.preventDefault();
+        console.log('🌀 Bouton Portal cliqué');
+        startGalleryTransition();
+    });
+    
+    // Effet hover amélioré pour le portail
+    playButton.addEventListener('mouseenter', () => {
+        playButton.style.backgroundColor = '#667eea';
+        playButton.style.color = 'white';
+        playButton.style.transform = 'scale(1.1) rotate(180deg)';
+        playButton.style.transition = 'all 0.5s ease';
+        playButton.style.boxShadow = '0 0 20px rgba(102, 126, 234, 0.5)';
+    });
+    
+    playButton.addEventListener('mouseleave', () => {
+        playButton.style.backgroundColor = 'white';
+        playButton.style.color = '#333';
+        playButton.style.transform = 'scale(1) rotate(0deg)';
+        playButton.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)';
+    });
     
     rightColumn.appendChild(playTitle);
     rightColumn.appendChild(playButton);
@@ -179,7 +487,7 @@ function createMenuElements() {
     bottomPanel.appendChild(centerColumn);
     bottomPanel.appendChild(rightColumn);
     
-    // Menu en haut à gauche
+    // Menu en haut à gauche (identique)
     const menuButton = document.createElement('div');
     menuButton.style.position = 'absolute';
     menuButton.style.top = '20px';
@@ -209,7 +517,7 @@ function createMenuElements() {
     menuPanel.style.zIndex = '100';
     menuPanel.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
     
-    const menuItems = ['Home', 'About', 'Levels', 'Settings', 'Help'];
+    const menuItems = ['Home', 'About', 'Portal Gallery', 'Settings', 'Help'];
     menuItems.forEach(item => {
         const menuItem = document.createElement('div');
         menuItem.style.fontFamily = '"Segoe UI", Helvetica, Arial, sans-serif';
@@ -253,7 +561,7 @@ function createMenuElements() {
     });
 }
 
-// Socle pour le cube (ajusté pour être plus haut)
+// Socle pour le cube
 const baseGeometry = new THREE.BoxGeometry(3, 0.3, 3);
 const baseMaterial = new THREE.MeshStandardMaterial({ 
     color: 0xffffff,
@@ -276,7 +584,7 @@ controls.minPolarAngle = Math.PI / 4;
 controls.maxPolarAngle = Math.PI / 2.5;
 controls.update();
 
-// Éclairage pour un rendu réaliste
+// Éclairage
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 directionalLight.position.set(5, 10, 7);
 scene.add(directionalLight);
@@ -284,21 +592,21 @@ scene.add(directionalLight);
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
 scene.add(ambientLight);
 
-// Couleurs pastel à cycler
+// Couleurs pastel pour le cube extérieur
 const pastelColors = [
-    { top: new THREE.Color(0xffffff), bottom: new THREE.Color(0xffdddd) }, // Blanc-rose
-    { top: new THREE.Color(0xffffff), bottom: new THREE.Color(0xddffdd) }, // Blanc-vert pastel
-    { top: new THREE.Color(0xffffff), bottom: new THREE.Color(0xdde5ff) }, // Blanc-bleu pastel
-    { top: new THREE.Color(0xffffff), bottom: new THREE.Color(0xf5ddff) }, // Blanc-lavande
-    { top: new THREE.Color(0xffffff), bottom: new THREE.Color(0xfff2dd) }, // Blanc-pêche
-    { top: new THREE.Color(0xffffff), bottom: new THREE.Color(0xe9ddff) }  // Blanc-violet pastel
+    { top: new THREE.Color(0xffffff), bottom: new THREE.Color(0xffdddd) },
+    { top: new THREE.Color(0xffffff), bottom: new THREE.Color(0xddffdd) },
+    { top: new THREE.Color(0xffffff), bottom: new THREE.Color(0xdde5ff) },
+    { top: new THREE.Color(0xffffff), bottom: new THREE.Color(0xf5ddff) },
+    { top: new THREE.Color(0xffffff), bottom: new THREE.Color(0xfff2dd) },
+    { top: new THREE.Color(0xffffff), bottom: new THREE.Color(0xe9ddff) }
 ];
 
 let currentColorIndex = 0;
 let targetTopColor = pastelColors[currentColorIndex].top.clone();
 let targetBottomColor = pastelColors[currentColorIndex].bottom.clone();
 
-// Créer le cube avec shader avancé pour les vagues
+// Shader pour l'extérieur du cube (mode menu)
 const cubeShaderMaterial = new THREE.ShaderMaterial({
     uniforms: {
         time: { value: 0 },
@@ -317,7 +625,6 @@ const cubeShaderMaterial = new THREE.ShaderMaterial({
         varying vec3 vPosition;
         varying vec3 vNormal;
         
-        // Fonction de bruit simplex 2D
         vec3 permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
 
         float snoise(vec2 v) {
@@ -352,61 +659,36 @@ const cubeShaderMaterial = new THREE.ShaderMaterial({
             vPosition = position;
             vNormal = normal;
             
-            // Calculer l'influence de la vague basée sur l'axe Y
-            float yInfluence = (position.y + 1.0) / 2.0; // 0 en bas, 1 en haut
-            
-            // Vagues de base (plus prononcées en bas)
+            float yInfluence = (position.y + 1.0) / 2.0;
             float baseWaves = snoise(vec2(position.x * 10.0 + position.z * 10.0, position.y * 5.0 + time)) * 0.05;
-            
-            // Vagues horizontales comme sur l'image
             float horizontalLines = sin(position.y * 50.0) * 0.03;
             
-            // Déplacement combiné de base (vagues légères partout)
             vec3 displacement = normal * (baseWaves + horizontalLines * (1.0 - yInfluence * 0.8));
             
-            // Effet d'onde concentrique autour de la position de la souris
             if (mouseInfluence > 0.0) {
-                // Convertir la position actuelle en coordonnées UV de la face
                 vec2 faceUV = vec2(0.0);
                 
                 if (abs(normal.z) > 0.9) {
-                    // Face avant/arrière
                     faceUV = vec2(position.x, position.y);
                 } else if (abs(normal.x) > 0.9) {
-                    // Face gauche/droite
                     faceUV = vec2(position.z, position.y);
                 } else if (abs(normal.y) > 0.9) {
-                    // Face haut/bas
                     faceUV = vec2(position.x, position.z);
                 }
                 
-                // Normaliser les coordonnées de -1,1 à 0,1
                 faceUV = faceUV * 0.5 + 0.5;
-                
-                // Distance à la position de la souris sur la face
                 float distToMouse = distance(faceUV, mousePos);
-                
-                // Onde concentrique autour du point de la souris - EFFET RENFORCÉ
-                float waveRadius = 0.4; // Rayon plus large
+                float waveRadius = 0.4;
                 if (distToMouse < waveRadius) {
-                    // Effet de vague renforcé
                     float waveStrength = (1.0 - distToMouse / waveRadius) * mouseInfluence * 0.4;
-                    
-                    // Plusieurs ondes concentriques (combinaison de fréquences)
                     float wave1 = sin((1.0 - distToMouse / waveRadius) * 15.0 - time * 2.0);
                     float wave2 = sin((1.0 - distToMouse / waveRadius) * 30.0 - time * 3.0) * 0.5;
-                    
-                    // Combiner les ondes pour un effet plus complexe
                     float combinedWave = wave1 + wave2;
-                    
-                    // Appliquer le déplacement de vague avec une amplitude plus importante
                     displacement += normal * combinedWave * waveStrength;
                 }
             }
             
-            // Appliquer le déplacement
             vec3 newPosition = position + displacement;
-            
             gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
         }
     `,
@@ -415,27 +697,17 @@ const cubeShaderMaterial = new THREE.ShaderMaterial({
         uniform vec3 bottomColor;
         uniform float mouseInfluence;
         uniform vec2 mousePos;
-        uniform float colorTransition;
         
         varying vec2 vUv;
         varying vec3 vPosition;
         varying vec3 vNormal;
         
         void main() {
-            // Dégradé vertical
-            float t = (vPosition.y + 1.0) / 2.0; // 0 à 1 du bas vers le haut
-            
-            // Effet nacré, plus prononcé sur les bords
+            float t = (vPosition.y + 1.0) / 2.0;
             float edgeEffect = pow(1.0 - abs(dot(normalize(vNormal), vec3(0.0, 0.0, 1.0))), 2.0);
-            
-            // Variation de couleur légère basée sur la position
             vec3 color = mix(bottomColor, topColor, t);
-            
-            // Ajouter une subtile iridescence
             color += vec3(0.05, 0.07, 0.1) * edgeEffect;
             
-            // Zone d'influence du curseur (effet subtil de brillance)
-            // Convertir la position en coordonnées UV de la face
             vec2 faceUV = vec2(0.0);
             if (abs(vNormal.z) > 0.9) {
                 faceUV = vec2(vPosition.x, vPosition.y);
@@ -445,14 +717,9 @@ const cubeShaderMaterial = new THREE.ShaderMaterial({
                 faceUV = vec2(vPosition.x, vPosition.z);
             }
             
-            // Normaliser à 0-1
             faceUV = faceUV * 0.5 + 0.5;
-            
-            // Effet de brillance au point d'interaction
             float distToMouse = distance(faceUV, mousePos);
             float glow = smoothstep(0.4, 0.0, distToMouse) * mouseInfluence * 0.3;
-            
-            // Ajouter la brillance
             color += vec3(0.2, 0.2, 0.3) * glow;
             
             gl_FragColor = vec4(color, 1.0);
@@ -461,38 +728,39 @@ const cubeShaderMaterial = new THREE.ShaderMaterial({
     side: THREE.DoubleSide
 });
 
-// Créer le cube avec une géométrie haute résolution pour les vagues
+// Créer le cube principal avec géométrie haute résolution
 const cubeGeometry = new THREE.BoxGeometry(2, 2, 2, 64, 64, 64);
 const cube = new THREE.Mesh(cubeGeometry, cubeShaderMaterial);
-cube.position.y = 0.5; // Positionner au-dessus du socle
+cube.position.y = 0.5;
 scene.add(cube);
 
-// Détection d'interaction avec le cube
+// NOUVEAU : Créer un plan pour l'effet portail à l'intérieur du cube
+const portalGeometry = new THREE.PlaneGeometry(1.8, 1.8);
+const portalMesh = new THREE.Mesh(portalGeometry, portalShaderMaterial);
+portalMesh.position.set(0, 0.5, 0); // Au centre du cube
+portalMesh.visible = false; // Invisible au début
+scene.add(portalMesh);
+
+// Variables pour l'interaction
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 let mouseIsOverCube = false;
 let lastInteractionTime = 0;
 let colorChangeReady = true;
 
-// Fonction pour changer la couleur avec transition douce
+// Fonction pour changer la couleur du cube extérieur
 function transitionToNextColor() {
-    if (!colorChangeReady) return;
+    if (!colorChangeReady || transitionState !== 'menu') return;
     
-    // Avancer à la prochaine couleur
     currentColorIndex = (currentColorIndex + 1) % pastelColors.length;
-    
-    // Stocker les couleurs cibles
     targetTopColor = pastelColors[currentColorIndex].top.clone();
     targetBottomColor = pastelColors[currentColorIndex].bottom.clone();
     
-    // Animation de transition de couleur
     const startTopColor = cubeShaderMaterial.uniforms.topColor.value.clone();
     const startBottomColor = cubeShaderMaterial.uniforms.bottomColor.value.clone();
     
-    const duration = 1.0; // 1 seconde pour la transition
+    const duration = 1.0;
     const startTime = Date.now();
-    const endTime = startTime + duration * 1000;
-    
     colorChangeReady = false;
     
     function updateColor() {
@@ -500,7 +768,6 @@ function transitionToNextColor() {
         const progress = Math.min((now - startTime) / (duration * 1000), 1.0);
         const easedProgress = easeOutCubic(progress);
         
-        // Interpoler les couleurs
         cubeShaderMaterial.uniforms.topColor.value.lerpColors(
             startTopColor, 
             targetTopColor, 
@@ -523,21 +790,19 @@ function transitionToNextColor() {
     updateColor();
 }
 
-// Gérer les mouvements de la souris
+// Gestion des mouvements de souris
 window.addEventListener('mousemove', (event) => {
-    // Mettre à jour les coordonnées normalisées de la souris
+    if (transitionState !== 'menu') return;
+    
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
     
-    // Utiliser raycaster pour voir si on survole le cube
     raycaster.setFromCamera(mouse, camera);
     const intersects = raycaster.intersectObject(cube);
     
     if (intersects.length > 0) {
-        // Arrêter la rotation auto au survol
         controls.autoRotate = false;
         
-        // Si on vient juste d'entrer sur le cube
         if (!mouseIsOverCube) {
             const now = Date.now();
             if (now - lastInteractionTime > 500) {
@@ -548,15 +813,12 @@ window.addEventListener('mousemove', (event) => {
         
         mouseIsOverCube = true;
         
-        // Obtenir le point d'intersection et la face
         const intersect = intersects[0];
         const face = intersect.face;
         const point = intersect.point;
         
-        // Convertir le point d'intersection en coordonnées UV de la face
         let faceUV = new THREE.Vector2();
         
-        // Déterminer la face et mapper correctement les coordonnées
         if (Math.abs(face.normal.z) > 0.9) {
             faceUV.x = (point.x + 1) * 0.5;
             faceUV.y = (point.y + 1) * 0.5;
@@ -568,24 +830,18 @@ window.addEventListener('mousemove', (event) => {
             faceUV.y = (point.z + 1) * 0.5;
         }
         
-        // Mettre à jour la position de la souris pour le shader
         cubeShaderMaterial.uniforms.mousePos.value.copy(faceUV);
-        
-        // Animation pour l'influence de la souris
         gsapLike(cubeShaderMaterial.uniforms.mouseInfluence, 'value', 1.0, 0.2);
         
         document.body.style.cursor = 'pointer';
     } else {
-        // Réactiver la rotation auto
         controls.autoRotate = true;
         
         if (mouseIsOverCube) {
             mouseIsOverCube = false;
         }
         
-        // Réduire l'influence de la souris
         gsapLike(cubeShaderMaterial.uniforms.mouseInfluence, 'value', 0.0, 0.5);
-        
         document.body.style.cursor = 'default';
     }
 });
@@ -630,8 +886,28 @@ function easeOutCubic(x) {
 function animate() {
     requestAnimationFrame(animate);
     
-    // Mettre à jour le temps pour les animations de vagues
+    // Mettre à jour le temps pour les shaders
     cubeShaderMaterial.uniforms.time.value += 0.01;
+    portalShaderMaterial.uniforms.iTime.value += 0.016;
+    
+    // Gestion de l'état du portail selon la progression
+    if (transitionState === 'portal' || transitionState === 'transitioning') {
+        // Rendre le portail visible et ajuster l'opacité du cube
+        portalMesh.visible = true;
+        cube.material.transparent = true;
+        cube.material.opacity = Math.max(0.3, 1 - portalShaderMaterial.uniforms.portalIntensity.value);
+        
+        // Orienter le portail vers la caméra
+        portalMesh.lookAt(camera.position);
+        
+        // Animation du portail
+        portalMesh.rotation.z += 0.01;
+    } else {
+        // Mode menu normal
+        portalMesh.visible = false;
+        cube.material.transparent = false;
+        cube.material.opacity = 1;
+    }
     
     controls.update();
     renderer.render(scene, camera);
@@ -663,9 +939,14 @@ style.innerHTML = `
 `;
 document.head.appendChild(style);
 
-// À la fin de script.js
+// Variables globales pour le debug
 window.myCamera = camera;
 window.myControls = controls;
+window.portalState = () => ({ transitionState, isInsideCube, portalIntensity, cameraInsideProgress });
+
+console.log('🌀 Cube Portal System Ready');
+console.log('🎮 Click "Enter Portal" to start the gallery transition');
+console.log('🔍 Debug: window.portalState() pour voir l\'état du portail');
 
 // Démarrer l'animation
 animate();
