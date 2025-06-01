@@ -1,17 +1,113 @@
 import * as THREE from './three.module.min.js';
 import { OrbitControls } from './OrbitControls.js';
 
-// Configuration de la scène principale
+// Système de gestion des langues pour le menu principal
+const translations = {
+    fr: {
+        // Titre principal
+        mainTitle: "COLOR PERCEPTION",
+        
+        // Menu principal
+        soundControl: "Contrôle Audio",
+        colorPerceptionTitle: "COLOR PERCEPTION",
+        interactiveExperience: "Une expérience interactive",
+        startGame: "Démarrer",
+        
+        // Menu déroulant
+        home: "Accueil",
+        about: "À propos",
+        settings: "Paramètres", 
+        help: "Aide",
+        credits: "Crédits",
+        
+        // Introduction variable
+        introTitle1: "Bienvenue dans l'Expérience des Couleurs",
+        introContent1: "Vous êtes sur le point de découvrir les secrets de la perception visuelle.",
+        
+        introTitle2: "Qui sommes-nous ?",
+        introContent2: "Nous sommes deux étudiantes, Néha et Dounia. Ce projet a été réalisé dans le cadre d'un projet tuteuré universitaire pour vulgariser les concepts scientifiques complexes.",
+        
+        introTitle3: "Notre Mission",
+        introContent3: "Comprendre pourquoi une même couleur peut paraître différente selon son environnement et comment votre cerveau interprète les couleurs.",
+        
+        introTitle4: "Ce que vous allez apprendre",
+        introContent4: "• Le contraste simultané de Michel-Eugène Chevreul\n• L'adaptation chromatique d'Edwin Land\n• L'effet du contexte sur la perception\n• Les mécanismes de la vision",
+        
+        introTitle5: "Prêt.e à commencer ?",
+        introContent5: "Utilisez les boutons pour naviguer à votre rythme, ou appuyez sur ENTRÉE/ESPACE pour traverser le portail vers l'expérience interactive.",
+        
+        // Navigation
+        previous: "← Précédent",
+        next: "Suivant →",
+        
+        // Messages de transition
+        transitionToGallery: "Transition vers la Galerie...",
+        returningToMenu: "Retour au menu...",
+        
+        // Sélecteur de langue
+        language: "Langue",
+        
+        // Bouton skip
+        skipIntro: "Passer l'introduction"
+    },
+    en: {
+        // Main title
+        mainTitle: "COLOR PERCEPTION",
+        
+        // Main menu
+        soundControl: "Sound Control",
+        colorPerceptionTitle: "COLOR PERCEPTION",
+        interactiveExperience: "An interactive experience",
+        startGame: "Start Game",
+        
+        // Dropdown menu
+        home: "Home",
+        about: "About",
+        settings: "Settings",
+        help: "Help", 
+        credits: "Credits",
+        
+        // Variable introduction
+        introTitle1: "Welcome to the Color Experience",
+        introContent1: "You are about to discover the secrets of visual perception.",
+        
+        introTitle2: "Who are we?",
+        introContent2: "We are two students, Néha and Dounia. This project was created as part of a university tutored project to popularize complex scientific concepts.",
+        
+        introTitle3: "Our Mission",
+        introContent3: "Understanding why the same color can appear different depending on its environment and how your brain interprets colors.",
+        
+        introTitle4: "What you will learn",
+        introContent4: "• Michel-Eugène Chevreul's simultaneous contrast\n• Edwin Land's chromatic adaptation\n• The effect of context on perception\n• The mechanisms of vision",
+        
+        introTitle5: "Ready to start?",
+        introContent5: "Use the buttons to navigate at your own pace, or press ENTER/SPACE to cross the portal to the interactive experience.",
+        
+        // Navigation
+        previous: "← Previous",
+        next: "Next →",
+        
+        // Transition messages
+        transitionToGallery: "Transition to Gallery...",
+        returningToMenu: "Returning to menu...",
+        
+        // Language selector
+        language: "Language",
+        
+        // Skip button
+        skipIntro: "Skip"
+    }
+};
+
+// État et configuration de la scène principale
 const canvas = document.getElementById('canvas');
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xececec); // Fond gris clair
+scene.background = new THREE.Color(0xececec);
 
-// Configuration de la caméra
 const camera = new THREE.PerspectiveCamera(45, canvas.width / canvas.height, 0.1, 100);
 camera.position.set(0, 0, 5);
 camera.lookAt(0, 0, 0);
 
-// Configuration du renderer
 const renderer = new THREE.WebGLRenderer({ 
     canvas: canvas, 
     antialias: true 
@@ -19,13 +115,360 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(canvas.width, canvas.height);
 
 // Variables d'état pour les transitions
-let transitionState = 'menu'; // États: 'menu', 'entering', 'white_room', 'approaching_portal', 'transitioning'
+let transitionState = 'menu';
 let whiteRoomReady = false;
 let explanationStep = 0;
+let currentLanguage = 'fr'; // Langue par défaut
 
 // Références vers les objets 3D principaux
 let whiteRoom;
 let portalMesh;
+
+// Fonction pour obtenir une traduction
+function t(key, params = {}) {
+    let text = translations[currentLanguage][key] || translations['fr'][key] || key;
+    
+    // Remplacer les paramètres dans le texte
+    Object.keys(params).forEach(param => {
+        text = text.replace(`{${param}}`, params[param]);
+    });
+    
+    return text;
+}
+
+// Fonction pour changer la langue
+function changeLanguage(lang) {
+    currentLanguage = lang;
+    localStorage.setItem('colorPerceptionLang', lang);
+    updateUILanguage();
+}
+
+// Fonction pour mettre à jour l'interface avec la nouvelle langue
+function updateUILanguage() {
+    // Mettre à jour le titre principal
+    const mainTitle = document.querySelector('div[style*="COLOR PERCEPTION"]');
+    if (mainTitle) {
+        mainTitle.textContent = t('mainTitle');
+    }
+    
+    // Mettre à jour les éléments du panneau de contrôle
+    updateControlPanelLanguage();
+    
+    // Mettre à jour le menu déroulant
+    updateDropdownMenuLanguage();
+}
+
+// Classe pour gérer l'introduction à rythme variable
+class VariablePaceIntroduction {
+    constructor() {
+        this.steps = [
+            {
+                titleKey: "introTitle1",
+                contentKey: "introContent1",
+                minDuration: 2000
+            },
+            {
+                titleKey: "introTitle2", 
+                contentKey: "introContent2",
+                minDuration: 3000
+            },
+            {
+                titleKey: "introTitle3",
+                contentKey: "introContent3", 
+                minDuration: 3000
+            },
+            {
+                titleKey: "introTitle4",
+                contentKey: "introContent4",
+                minDuration: 4000
+            },
+            {
+                titleKey: "introTitle5",
+                contentKey: "introContent5",
+                minDuration: 0
+            }
+        ];
+        this.currentStep = 0;
+        this.startTime = null;
+        this.navigationEnabled = false;
+    }
+    
+    showStep(stepIndex) {
+        if (stepIndex < 0 || stepIndex >= this.steps.length) return;
+        
+        const step = this.steps[stepIndex];
+        this.startTime = Date.now();
+        this.navigationEnabled = false;
+        
+        // Supprimer tous les éléments d'introduction précédents
+        const existingStep = document.querySelector('.intro-step');
+        if (existingStep) {
+            existingStep.remove();
+        }
+        
+        // Supprimer aussi toute flèche de navigation existante
+        const existingArrow = document.getElementById('intro-next');
+        if (existingArrow) {
+            existingArrow.remove();
+        }
+        
+        // Créer le conteneur pour cette étape
+        const stepElement = document.createElement('div');
+        stepElement.className = 'intro-step';
+        stepElement.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 30px 40px;
+            border-radius: 15px;
+            font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+            text-align: center;
+            max-width: 600px;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            position: relative;
+        `;
+        
+        // Créer le contenu sans flèche de navigation
+        stepElement.innerHTML = `
+            <h2 style="margin: 0 0 15px 0; font-size: 24px; color: #66D9EF;">${t(step.titleKey)}</h2>
+            <p style="margin: 0 0 25px 0; font-size: 16px; line-height: 1.5; white-space: pre-line;">${t(step.contentKey)}</p>
+        `;
+        
+        document.body.appendChild(stepElement);
+        
+        // Animation d'entrée
+        setTimeout(() => {
+            stepElement.style.opacity = '1';
+            
+            // Maintenant que le stepElement est visible, on peut créer la flèche
+            // avec une position basée sur ses dimensions réelles
+            const rect = stepElement.getBoundingClientRect();
+            
+            // Créer la flèche de navigation en diagonale à l'extérieur du cadre
+            const navigationArrow = document.createElement('div');
+            navigationArrow.id = 'intro-next';
+            navigationArrow.style.cssText = `
+                position: fixed;
+                bottom: ${window.innerHeight - rect.bottom + 20}px;
+                right: ${window.innerWidth - rect.right + 20}px;
+                width: 45px;
+                height: 45px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+                opacity: 0;
+                z-index: 101;
+            `;
+            
+            // Ajouter une icône de flèche
+            navigationArrow.innerHTML = `
+                <span style="color: white; font-size: 20px; transform: translateY(-2px);">→</span>
+            `;
+            
+            // Style spécial pour le dernier bouton
+            if (stepIndex === this.steps.length - 1) {
+                navigationArrow.style.background = 'linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%)';
+                navigationArrow.innerHTML = `
+                    <span style="color: white; font-size: 20px;">✓</span>
+                `;
+            }
+            
+            document.body.appendChild(navigationArrow);
+            
+            // Fade-in de la flèche
+            setTimeout(() => {
+                navigationArrow.style.opacity = '0.7';
+            }, 200);
+            
+            // Event listeners pour la navigation
+            navigationArrow.addEventListener('click', () => {
+                if (this.navigationEnabled) {
+                    if (stepIndex < this.steps.length - 1) {
+                        this.nextStep();
+                    } else {
+                        // Si c'est la dernière étape, commencer l'approche du portail
+                        if (whiteRoomReady) {
+                            startPortalApproach();
+                        }
+                    }
+                }
+            });
+            
+            // Ajouter un effet de survol
+            navigationArrow.addEventListener('mouseenter', () => {
+                navigationArrow.style.transform = 'scale(1.15)';
+                navigationArrow.style.opacity = '1';
+            });
+            
+            navigationArrow.addEventListener('mouseleave', () => {
+                navigationArrow.style.transform = 'scale(1)';
+                navigationArrow.style.opacity = '0.7';
+            });
+            
+            // Gérer le repositionnement en cas de redimensionnement
+            const updateArrowPosition = () => {
+                const updatedRect = stepElement.getBoundingClientRect();
+                navigationArrow.style.bottom = `${window.innerHeight - updatedRect.bottom + 20}px`;
+                navigationArrow.style.right = `${window.innerWidth - updatedRect.right + 20}px`;
+            };
+            
+            window.addEventListener('resize', updateArrowPosition);
+        }, 100);
+        
+        // Activer la navigation immédiatement sans délai
+        this.enableNavigation();
+        
+        this.currentStep = stepIndex;
+        explanationStep = stepIndex + 1;
+    }
+    
+    enableNavigation() {
+        this.navigationEnabled = true;
+        const navArrow = document.getElementById('intro-next');
+        if (navArrow) {
+            navArrow.style.opacity = '0.7';
+        }
+    }
+    
+    nextStep() {
+        if (this.currentStep < this.steps.length - 1) {
+            this.showStep(this.currentStep + 1);
+        }
+    }
+    
+    previousStep() {
+        // Gardons cette méthode pour la navigation par flèches du clavier
+        if (this.currentStep > 0) {
+            this.showStep(this.currentStep - 1);
+        }
+    }
+    
+    start() {
+        this.showStep(0);
+    }
+    
+    end() {
+        const existingStep = document.querySelector('.intro-step');
+        const existingArrow = document.getElementById('intro-next');
+        
+        if (existingStep) {
+            existingStep.style.opacity = '0';
+            setTimeout(() => {
+                existingStep.remove();
+            }, 500);
+        }
+        
+        if (existingArrow) {
+            existingArrow.style.opacity = '0';
+            setTimeout(() => {
+                existingArrow.remove();
+            }, 500);
+        }
+    }
+}
+
+// Fonction pour créer un bouton skip qui reste visible pendant toute l'introduction
+function createSkipButton() {
+    // Supprimer le bouton précédent s'il existe déjà
+    const existingSkipBtn = document.getElementById('skip-gallery-button');
+    if (existingSkipBtn) {
+        existingSkipBtn.remove();
+    }
+    
+    // Créer le bouton Skip avec un style similaire au bouton de langue
+    const skipButton = document.createElement('div');
+    skipButton.id = 'skip-gallery-button';
+    skipButton.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 30px;
+        font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease;
+        z-index: 200;
+        display: flex;
+        align-items: center;
+        opacity: 0.85;
+    `;
+    
+    // Contenu du bouton avec une icône de flèche
+    skipButton.innerHTML = `
+        ${t('skipIntro')} 
+        <span style="margin-left: 5px; font-size: 18px;">➔</span>
+    `;
+    
+    // Ajouter les effets de survol
+    skipButton.addEventListener('mouseenter', () => {
+        skipButton.style.transform = 'scale(1.05)';
+        skipButton.style.opacity = '1';
+        skipButton.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.4)';
+    });
+    
+    skipButton.addEventListener('mouseleave', () => {
+        skipButton.style.transform = 'scale(1)';
+        skipButton.style.opacity = '0.85';
+        skipButton.style.boxShadow = '0 3px 10px rgba(0, 0, 0, 0.3)';
+    });
+    
+    // Ajouter l'action du bouton pour accéder directement à la galerie
+    skipButton.addEventListener('click', () => {
+        // Animation de transition avant redirection
+        const skipOverlay = document.createElement('div');
+        skipOverlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            opacity: 0;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+            font-size: 24px;
+        `;
+        skipOverlay.textContent = t('transitionToGallery');
+        document.body.appendChild(skipOverlay);
+        
+        // Effet de fondu
+        setTimeout(() => {
+            skipOverlay.style.opacity = '1';
+            // Rediriger vers la galerie après le fondu
+            setTimeout(() => {
+                window.location.href = 'gallery.html';
+            }, 800);
+        }, 100);
+    });
+    
+    document.body.appendChild(skipButton);
+    return skipButton;
+}
+
+// Instance de l'introduction
+let variableIntroduction = null;
 
 // Gestion du redimensionnement de la fenêtre
 function updateRendererSize() {
@@ -53,7 +496,7 @@ interfaceContainer.style.left = '0';
 interfaceContainer.style.pointerEvents = 'none';
 document.body.appendChild(interfaceContainer);
 
-// Shader pour l'effet tunnel du portail
+// Shader pour l'effet tunnel du portail (inchangé)
 const portalShaderMaterial = new THREE.ShaderMaterial({
     uniforms: {
         iTime: { value: 0 },
@@ -105,7 +548,6 @@ const portalShaderMaterial = new THREE.ShaderMaterial({
             
             vec3 basePalette = getGalleryPalette(cameraProgress);
             
-            // Génération de l'effet tunnel vertical
             for(float step = 0.0; step < 50.0; step++) {
                 i = step;
                 z += d + 0.001;
@@ -116,7 +558,6 @@ const portalShaderMaterial = new THREE.ShaderMaterial({
                 p = q;
                 p.y -= 0.11;
                 
-                // Tunnel droit sans rotation
                 p.y -= 0.2;
                 d = abs(g(p, 6.0) - g(p, 18.0)) / 3.0;
                 
@@ -134,7 +575,6 @@ const portalShaderMaterial = new THREE.ShaderMaterial({
                 o += multiplier * p / denominator;
             }
             
-            // Ajout d'une lueur centrale
             float pulse = (1.2 + sin(T * 0.5) * sin(1.1 * T) * sin(1.6 * T)) * 600.0;
             vec2 center = q.xy;
             float centerDist = length(center);
@@ -160,18 +600,16 @@ const portalShaderMaterial = new THREE.ShaderMaterial({
     side: THREE.DoubleSide
 });
 
-// Construction de la pièce blanche environnante
+// Construction de la pièce blanche environnante (inchangée)
 function createWhiteRoom() {
     const whiteRoomGroup = new THREE.Group();
     whiteRoomGroup.name = 'whiteRoom';
     
-    // Dimensions de la pièce
     const roomSize = 16;
     const roomHeight = 8;
     const wallGeometry = new THREE.PlaneGeometry(roomSize, roomHeight);
     const floorGeometry = new THREE.PlaneGeometry(roomSize, roomSize);
     
-    // Matériaux pour les surfaces
     const wallMaterial = new THREE.MeshStandardMaterial({ 
         color: 0xffffff,
         side: THREE.DoubleSide,
@@ -186,7 +624,6 @@ function createWhiteRoom() {
         metalness: 0.05
     });
     
-    // Construction des murs
     const backWall = new THREE.Mesh(wallGeometry, wallMaterial);
     backWall.position.set(0, 0, -roomSize/2);
     whiteRoomGroup.add(backWall);
@@ -206,7 +643,6 @@ function createWhiteRoom() {
     frontWall.position.set(0, 0, roomSize/2);
     whiteRoomGroup.add(frontWall);
     
-    // Sol et plafond
     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.rotation.x = -Math.PI / 2;
     floor.position.set(0, -roomHeight/2, 0);
@@ -217,7 +653,6 @@ function createWhiteRoom() {
     ceiling.position.set(0, roomHeight/2, 0);
     whiteRoomGroup.add(ceiling);
     
-    // Système d'éclairage de la pièce
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
     whiteRoomGroup.add(ambientLight);
     
@@ -225,7 +660,6 @@ function createWhiteRoom() {
     mainLight.position.set(0, roomHeight/2 - 1, 0);
     whiteRoomGroup.add(mainLight);
     
-    // Éclairage d'ambiance dans les coins
     const cornerLights = [
         { x: roomSize/4, y: roomHeight/4, z: roomSize/4 },
         { x: -roomSize/4, y: roomHeight/4, z: roomSize/4 },
@@ -239,7 +673,6 @@ function createWhiteRoom() {
         whiteRoomGroup.add(light);
     });
     
-    // Détails architecturaux
     const plinthGeometry = new THREE.BoxGeometry(roomSize, 0.05, 0.05);
     const plinthMaterial = new THREE.MeshStandardMaterial({
         color: 0xefefef,
@@ -269,99 +702,6 @@ function createWhiteRoom() {
     return whiteRoomGroup;
 }
 
-// Système de textes explicatifs progressifs
-function createExplanationTexts() {
-    const explanations = [
-        {
-            title: "Bienvenue dans l'Expérience des Couleurs",
-            text: "Vous êtes sur le point de découvrir les secrets de la perception visuelle.",
-            duration: 3000
-        },
-        {
-            title: "Qui sommes-nous ?",
-            text: "Nous sommes deux étudiantes, Néha et Dounia. Ce projet a été réalisé dans le cadre d'un projet tuteuré universitaire pour vulgariser les concepts scientifiques complexes. ",
-            duration: 4000
-        },
-        {
-            title: "Notre Mission",
-            text: "Comprendre pourquoi une même couleur peut paraître différente selon son environnement et comment votre cerveau interprète les couleurs.",
-            duration: 4000
-        },
-        {
-            title: "Ce que vous allez apprendre",
-            text: "• Le contraste simultané de Michel-Eugène Chevreul\n• L'adaptation chromatique\n• L'effet du contexte sur la perception\n• Les mécanismes de la vision",
-            duration: 5000
-        },
-        {
-            title: "Prêt.e à commencer ?",
-            text: "Appuyez sur ENTRÉE ou ESPACE pour traverser le portail vers l'expérience interactive.",
-            duration: 0 // Reste affiché
-        }
-    ];
-    
-    let currentStep = 0;
-    
-    function showNextExplanation() {
-        if (currentStep >= explanations.length) return;
-        
-        const explanation = explanations[currentStep];
-        
-        // Création dynamique du conteneur de texte
-        const textElement = document.createElement('div');
-        textElement.style.cssText = `
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 30px 40px;
-            border-radius: 15px;
-            font-family: "Segoe UI", Helvetica, Arial, sans-serif;
-            text-align: center;
-            max-width: 600px;
-            opacity: 0;
-            transition: opacity 1s ease;
-            z-index: 100;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        `;
-        
-        textElement.innerHTML = `
-            <h2 style="margin: 0 0 15px 0; font-size: 24px; color: #66D9EF;">${explanation.title}</h2>
-            <p style="margin: 0; font-size: 16px; line-height: 1.5; white-space: pre-line;">${explanation.text}</p>
-        `;
-        
-        document.body.appendChild(textElement);
-        
-        // Animation d'entrée
-        setTimeout(() => {
-            textElement.style.opacity = '1';
-        }, 100);
-        
-        // Gestion de la disparition automatique
-        if (explanation.duration > 0) {
-            setTimeout(() => {
-                textElement.style.opacity = '0';
-                setTimeout(() => {
-                    textElement.remove();
-                    currentStep++;
-                    showNextExplanation();
-                }, 1000);
-            }, explanation.duration);
-        } else {
-            // Le dernier texte reste affiché
-            currentStep++;
-            explanationStep = currentStep;
-        }
-    }
-    
-    // Démarrage des explications après un court délai
-    setTimeout(() => {
-        showNextExplanation();
-    }, 1000);
-}
-
 // Fonction de transition principale vers la galerie
 function startGalleryTransition() {
     console.log('Démarrage de la transition vers la pièce blanche');
@@ -369,10 +709,16 @@ function startGalleryTransition() {
     if (transitionState !== 'menu') return;
     transitionState = 'entering';
     
+    // Terminer l'introduction si elle est en cours
+    if (variableIntroduction) {
+        variableIntroduction.end();
+    }
+    
     // Masquage des éléments d'interface
     const bottomPanel = document.querySelector('div[style*="bottom: 0"]');
-    const mainTitle = document.querySelector('div[style*="COLOR PERCEPTION"]');
+    const mainTitle = document.querySelector('div[style*="' + t('mainTitle') + '"]');
     const menuButton = document.querySelector('div[style*="top: 20px"]');
+    const languageMenu = document.getElementById('language-menu-main');
     
     if (bottomPanel) {
         bottomPanel.style.opacity = '0';
@@ -387,6 +733,10 @@ function startGalleryTransition() {
     if (menuButton) {
         menuButton.style.opacity = '0';
         menuButton.style.transition = 'all 0.5s ease';
+    }
+    if (languageMenu) {
+        languageMenu.style.opacity = '0';
+        languageMenu.style.transition = 'all 0.5s ease';
     }
     
     controls.enabled = false;
@@ -412,39 +762,34 @@ function startGalleryTransition() {
                 setTimeout(() => whiteOverlay.style.opacity = '1', 100);
                 
                 setTimeout(() => {
-                    // Basculement vers la scène de la pièce blanche
                     cube.visible = false;
                     base.visible = false;
                     whiteRoom.visible = true;
                     portalMesh.visible = true;
                     
-                    // Positionnement de la caméra pour voir le portail
                     camera.position.set(0, 0, 6);
                     camera.lookAt(0, 0, -4.5);
                     
                     transitionState = 'white_room';
                     whiteRoomReady = true;
                     
-                    // Révélation progressive de la scène
                     setTimeout(() => {
                         whiteOverlay.style.opacity = '0';
                         setTimeout(() => {
                             whiteOverlay.remove();
-                            // Animation d'apparition du portail
                             gsap.to(portalShaderMaterial.uniforms.portalIntensity, {
                                 duration: 2,
                                 value: 1.0,
                                 ease: "power2.out"
                             });
-                            // Lancement des explications
-                            createExplanationTexts();
+                            // Lancement de l'introduction à rythme variable
+                            createVariableIntroduction();
                         }, 800);
                     }, 300);
                 }, 800);
             }
         });
     } else {
-        // Version de secours sans GSAP
         setTimeout(() => {
             cube.visible = false;
             base.visible = false;
@@ -455,9 +800,22 @@ function startGalleryTransition() {
             transitionState = 'white_room';
             whiteRoomReady = true;
             portalShaderMaterial.uniforms.portalIntensity.value = 1.0;
-            createExplanationTexts();
+            createVariableIntroduction();
         }, 2500);
     }
+}
+
+// Création de l'introduction à rythme variable
+function createVariableIntroduction() {
+    variableIntroduction = new VariablePaceIntroduction();
+    
+    // Créer le bouton skip
+    createSkipButton();
+    
+    // Délai avant de commencer l'introduction
+    setTimeout(() => {
+        variableIntroduction.start();
+    }, 1000);
 }
 
 // Fonction d'approche et traversée du portail
@@ -467,14 +825,14 @@ function startPortalApproach() {
     console.log('Approche du portail interdimensionnel');
     transitionState = 'approaching_portal';
     
-    // Nettoyage des textes d'explication
-    const explanationTexts = document.querySelectorAll('div[style*="backdrop-filter: blur(10px)"]');
-    explanationTexts.forEach(text => text.remove());
+    // Terminer l'introduction
+    if (variableIntroduction) {
+        variableIntroduction.end();
+    }
     
     if (window.gsap) {
         const tl = gsap.timeline();
         
-        // Phase d'approche
         tl.to(camera.position, {
             duration: 3,
             z: 1.5,
@@ -485,7 +843,6 @@ function startPortalApproach() {
             }
         })
         
-        // Phase de traversée
         .to(camera.position, {
             duration: 2,
             z: -2,
@@ -497,7 +854,6 @@ function startPortalApproach() {
             }
         })
         
-        // Transition finale vers la galerie
         .to({}, {
             duration: 1,
             onStart: () => {
@@ -510,7 +866,7 @@ function startPortalApproach() {
                     align-items: center; justify-content: center;
                     color: white; font-size: 24px; font-family: "Segoe UI", sans-serif;
                 `;
-                finalOverlay.innerHTML = 'Transition vers la Galerie...';
+                finalOverlay.innerHTML = t('transitionToGallery');
                 document.body.appendChild(finalOverlay);
                 
                 setTimeout(() => finalOverlay.style.opacity = '1', 100);
@@ -524,20 +880,18 @@ function startPortalApproach() {
             window.location.href = 'gallery.html';
         }, 3000);
     }
-}
-
-// Initialisation de tous les éléments 3D
-function initScene() {
+ }
+ 
+ // Initialisation de tous les éléments 3D (inchangée)
+ function initScene() {
     whiteRoom = createWhiteRoom();
     
-    // Création du portail avec ses dimensions de porte
     const portalGeometry = new THREE.PlaneGeometry(3.2, 7.5, 64, 128);
     portalMesh = new THREE.Mesh(portalGeometry, portalShaderMaterial);
-    portalMesh.position.set(0, -0.25, -6); // Positionné pour toucher le sol
+    portalMesh.position.set(0, -0.25, -6);
     portalMesh.visible = false;
     scene.add(portalMesh);
     
-    // Système d'éclairage du portail
     const portalLight = new THREE.PointLight(0x66D9EF, 3.0, 15);
     portalLight.position.set(0, 0, -5);
     portalLight.visible = false;
@@ -552,7 +906,6 @@ function initScene() {
     
     window.portalGlow = portalGlow;
     
-    // Ombre projetée au sol
     const shadowPlane = new THREE.Mesh(
         new THREE.CircleGeometry(2.5, 32),
         new THREE.MeshBasicMaterial({
@@ -569,12 +922,11 @@ function initScene() {
     
     window.portalShadow = shadowPlane;
     
-    // Génération du système de particules
     createPortalParticles();
-}
-
-// Système de particules encadrant le portail
-function createPortalParticles() {
+ }
+ 
+ // Système de particules encadrant le portail (inchangé)
+ function createPortalParticles() {
     const particleCount = 450;
     const particles = new THREE.BufferGeometry();
     const positions = new Float32Array(particleCount * 3);
@@ -584,43 +936,35 @@ function createPortalParticles() {
     for (let i = 0; i < particleCount; i++) {
         const i3 = i * 3;
         
-        // Distribution spatiale des particules autour de la porte
         const distributionType = Math.random();
         let x, y, z;
         
         if (distributionType < 0.7) {
-            // Particules formant le cadre de la porte
             const side = Math.random();
             if (side < 0.25) {
-                // Montant gauche
                 x = -1.8 - Math.random() * 0.8;
                 y = -3.5 + Math.random() * 7;
                 z = -6 + (Math.random() - 0.5) * 1.5;
             } else if (side < 0.5) {
-                // Montant droit
                 x = 1.8 + Math.random() * 0.8;
                 y = -3.5 + Math.random() * 7;
                 z = -6 + (Math.random() - 0.5) * 1.5;
             } else if (side < 0.75) {
-                // Linteau supérieur
                 x = (Math.random() - 0.5) * 4;
                 y = 3.2 + Math.random() * 0.8;
                 z = -6 + (Math.random() - 0.5) * 1.5;
             } else {
-                // Seuil de la porte
                 x = (Math.random() - 0.5) * 4;
                 y = -3.8 + Math.random() * 0.6;
                 z = -6 + (Math.random() - 0.5) * 1.5;
             }
         } else if (distributionType < 0.9) {
-            // Particules en orbite élargie
             const angle = Math.random() * Math.PI * 2;
             const radius = 3.5 + Math.random() * 1.5;
             x = Math.cos(angle) * radius;
             y = -2 + Math.random() * 6;
             z = -6 + Math.sin(angle) * radius * 0.3;
         } else {
-            // Particules d'ambiance éparses
             const angle = Math.random() * Math.PI * 2;
             const radius = 5 + Math.random() * 2;
             x = Math.cos(angle) * radius;
@@ -632,26 +976,21 @@ function createPortalParticles() {
         positions[i3 + 1] = y;
         positions[i3 + 2] = z;
         
-        // Palette de couleurs variée pour les particules
         const colorChoice = Math.random();
         if (colorChoice < 0.4) {
-            // Particules cyan/turquoise (40%)
-            colors[i3] = 0.1 + Math.random() * 0.2;     // Rouge faible
-            colors[i3 + 1] = 0.7 + Math.random() * 0.3; // Vert dominant
-            colors[i3 + 2] = 0.8 + Math.random() * 0.2; // Bleu intense
+            colors[i3] = 0.1 + Math.random() * 0.2;
+            colors[i3 + 1] = 0.7 + Math.random() * 0.3;
+            colors[i3 + 2] = 0.8 + Math.random() * 0.2;
         } else if (colorChoice < 0.7) {
-            // Particules magenta/violet (30%)
-            colors[i3] = 0.6 + Math.random() * 0.4;     // Rouge moyen
-            colors[i3 + 1] = 0.2 + Math.random() * 0.3; // Vert réduit
-            colors[i3 + 2] = 0.8 + Math.random() * 0.2; // Bleu fort
+            colors[i3] = 0.6 + Math.random() * 0.4;
+            colors[i3 + 1] = 0.2 + Math.random() * 0.3;
+            colors[i3 + 2] = 0.8 + Math.random() * 0.2;
         } else {
-            // Particules dorées/orangées (30%)
-            colors[i3] = 0.9 + Math.random() * 0.1;     // Rouge élevé
-            colors[i3 + 1] = 0.6 + Math.random() * 0.3; // Vert moyen
-            colors[i3 + 2] = 0.1 + Math.random() * 0.2; // Bleu minimal
+            colors[i3] = 0.9 + Math.random() * 0.1;
+            colors[i3 + 1] = 0.6 + Math.random() * 0.3;
+            colors[i3 + 2] = 0.1 + Math.random() * 0.2;
         }
         
-        // Paramètres de mouvement pour chaque particule
         velocities.push({
             x: (Math.random() - 0.5) * 0.025,
             y: (Math.random() - 0.5) * 0.025,
@@ -676,293 +1015,469 @@ function createPortalParticles() {
     });
     
     const particleSystem = new THREE.Points(particles, particleMaterial);
-   particleSystem.visible = false;
-   scene.add(particleSystem);
+    particleSystem.visible = false;
+    scene.add(particleSystem);
+    
+    window.portalParticles = particleSystem;
+    window.particleVelocities = velocities;
+ }
+ 
+ // Fonction d'animation des particules du portail (inchangée)
+ function animatePortal() {
+    if (!window.portalParticles) return;
+    
+    const positions = window.portalParticles.geometry.attributes.position.array;
+    const velocities = window.particleVelocities;
+    const time = Date.now() * 0.001;
+    
+    for (let i = 0; i < positions.length / 3; i++) {
+        const i3 = i * 3;
+        const v = velocities[i];
+        
+        v.angle += v.speed;
+        
+        const waveOffset = Math.sin(time * 0.6 + i * 0.04) * 0.15;
+        
+        positions[i3] = v.originalX + Math.cos(v.angle + time * 0.3) * waveOffset;
+        positions[i3 + 2] = -6 + Math.sin(v.angle + time * 0.2) * (waveOffset * 0.6);
+        
+        positions[i3 + 1] = v.originalY + Math.sin(time * 1.2 + v.angle) * 0.12;
+        
+        positions[i3] += v.x;
+        positions[i3 + 1] += v.verticalSpeed * 0.8;
+        positions[i3 + 2] += v.z;
+        
+        if (positions[i3] < -7 || positions[i3] > 7) v.x = -v.x;
+        if (positions[i3 + 1] < -5 || positions[i3 + 1] > 5) v.verticalSpeed = -v.verticalSpeed;
+        if (positions[i3 + 2] < -9 || positions[i3 + 2] > -3) v.z = -v.z;
+    }
+    
+    window.portalParticles.geometry.attributes.position.needsUpdate = true;
+    
+    if (window.portalLight) {
+        const lightPulse = 2.8 + 0.5 * Math.sin(time * 0.8);
+        window.portalLight.intensity = lightPulse;
+    }
+    
+    if (window.portalGlow) {
+        const glowPulse = 1.8 + 0.4 * Math.sin(time * 0.6);
+        window.portalGlow.intensity = glowPulse;
+    }
+    
+    if (window.portalShadow) {
+        const shadowPulse = 1 + 0.12 * Math.sin(time * 0.7);
+        window.portalShadow.scale.set(shadowPulse, shadowPulse, 1);
+    }
+ }
+ 
+ // Gestion de la visibilité des éléments selon l'état (inchangée)
+ function updatePortalVisibility() {
+    if (transitionState === 'white_room' || transitionState === 'approaching_portal' || transitionState === 'transitioning') {
+        if (portalMesh) portalMesh.visible = true;
+        if (window.portalLight) window.portalLight.visible = true;
+        if (window.portalGlow) window.portalGlow.visible = true;
+        if (window.portalShadow) window.portalShadow.visible = true;
+        if (window.portalParticles) window.portalParticles.visible = true;
+        if (cube) cube.visible = false;
+        if (base) base.visible = false;
+        
+        animatePortal();
+    } else {
+        if (portalMesh) portalMesh.visible = false;
+        if (window.portalLight) window.portalLight.visible = false;
+        if (window.portalGlow) window.portalGlow.visible = false;
+        if (window.portalShadow) window.portalShadow.visible = false;
+        if (window.portalParticles) window.portalParticles.visible = false;
+        if (cube) cube.visible = true;
+        if (base) base.visible = true;
+    }
+ }
+ 
+ // Fonction pour mettre à jour le panneau de contrôle avec la langue
+ function updateControlPanelLanguage() {
+    const soundTitle = document.querySelector('.sound-title');
+    const playTitle = document.querySelector('.play-title');
+    const colorPerceptionTitle = document.querySelector('.color-perception-title');
+    const subtitle = document.querySelector('.subtitle');
+    
+    if (soundTitle) soundTitle.textContent = t('soundControl');
+    if (playTitle) playTitle.textContent = t('startGame');
+    if (colorPerceptionTitle) colorPerceptionTitle.textContent = t('colorPerceptionTitle');
+    if (subtitle) subtitle.textContent = t('interactiveExperience');
+ }
+ 
+ // Fonction pour mettre à jour le menu déroulant avec la langue
+ function updateDropdownMenuLanguage() {
+    const menuItems = document.querySelectorAll('.menu-item');
+    const menuTexts = ['home', 'about', 'settings', 'help', 'credits'];
+    
+    menuItems.forEach((item, index) => {
+        if (index < menuTexts.length) {
+            item.textContent = t(menuTexts[index]);
+        }
+    });
+ }
+ 
+ // Construction de l'interface utilisateur principale avec support multilingue
+ function createMenuElements() {
+    const mainTitle = document.createElement('div');
+    mainTitle.style.position = 'absolute';
+    mainTitle.style.top = '5%';
+    mainTitle.style.left = '50%';
+    mainTitle.style.transform = 'translateX(-50%)';
+    mainTitle.style.color = 'white';
+    mainTitle.style.fontFamily = '"Segoe UI", Helvetica, Arial, sans-serif';
+    mainTitle.style.fontSize = '38px';
+    mainTitle.style.fontWeight = '600';
+    mainTitle.style.letterSpacing = '3px';
+    mainTitle.style.textAlign = 'center';
+    mainTitle.style.textTransform = 'uppercase';
+    mainTitle.style.textShadow = '0 2px 4px rgba(0,0,0,0.3)';
+    mainTitle.style.zIndex = '100';
+    mainTitle.textContent = t('mainTitle');
+    
+    const bottomPanel = document.createElement('div');
+    bottomPanel.style.position = 'absolute';
+    bottomPanel.style.bottom = '0';
+    bottomPanel.style.left = '50%';
+    bottomPanel.style.transform = 'translateX(-50%)';
+    bottomPanel.style.width = '80%';
+    bottomPanel.style.height = '120px';
+    bottomPanel.style.backgroundColor = 'white';
+    bottomPanel.style.borderTopLeftRadius = '15px';
+    bottomPanel.style.borderTopRightRadius = '15px';
+    bottomPanel.style.boxShadow = '0 -2px 10px rgba(0,0,0,0.1)';
+    bottomPanel.style.display = 'flex';
+    bottomPanel.style.justifyContent = 'space-around';
+    bottomPanel.style.alignItems = 'center';
+    bottomPanel.style.padding = '10px 30px';
+    bottomPanel.style.zIndex = '90';
+    
+    const leftColumn = document.createElement('div');
+    leftColumn.style.display = 'flex';
+    leftColumn.style.flexDirection = 'column';
+    leftColumn.style.alignItems = 'center';
+    leftColumn.style.justifyContent = 'center';
+    leftColumn.style.textAlign = 'center';
+    leftColumn.style.width = '25%';
+    
+    const soundTitle = document.createElement('div');
+    soundTitle.className = 'sound-title';
+    soundTitle.style.fontFamily = '"Segoe UI", Helvetica, Arial, sans-serif';
+    soundTitle.style.fontSize = '16px';
+    soundTitle.style.color = '#333';
+    soundTitle.style.marginBottom = '10px';
+    soundTitle.textContent = t('soundControl');
+    
+    const soundButton = document.createElement('div');
+    soundButton.style.width = '50px';
+    soundButton.style.height = '50px';
+    soundButton.style.borderRadius = '50%';
+    soundButton.style.backgroundColor = 'white';
+    soundButton.style.border = '2px solid #e0e0e0';
+    soundButton.style.display = 'flex';
+    soundButton.style.alignItems = 'center';
+    soundButton.style.justifyContent = 'center';
+    soundButton.style.cursor = 'pointer';
+    soundButton.style.pointerEvents = 'auto';
+    soundButton.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)';
+    soundButton.innerHTML = '&#128266;';
+    
+    leftColumn.appendChild(soundTitle);
+    leftColumn.appendChild(soundButton);
+    
+    const centerColumn = document.createElement('div');
+    centerColumn.style.display = 'flex';
+    centerColumn.style.flexDirection = 'column';
+    centerColumn.style.alignItems = 'center';
+    centerColumn.style.justifyContent = 'center';
+    centerColumn.style.textAlign = 'center';
+    centerColumn.style.width = '50%';
+    
+    const colorPerceptionTitle = document.createElement('div');
+    colorPerceptionTitle.className = 'color-perception-title';
+    colorPerceptionTitle.style.fontFamily = '"Segoe UI", Helvetica, Arial, sans-serif';
+    colorPerceptionTitle.style.fontSize = '24px';
+    colorPerceptionTitle.style.fontWeight = 'bold';
+    colorPerceptionTitle.style.color = '#333';
+    colorPerceptionTitle.style.letterSpacing = '2px';
+    colorPerceptionTitle.textContent = t('colorPerceptionTitle');
+    
+    const subtitle = document.createElement('div');
+    subtitle.className = 'subtitle';
+    subtitle.style.fontFamily = '"Segoe UI", Helvetica, Arial, sans-serif';
+    subtitle.style.fontSize = '14px';
+    subtitle.style.color = '#666';
+    subtitle.style.marginTop = '5px';
+    subtitle.textContent = t('interactiveExperience');
+    
+    centerColumn.appendChild(colorPerceptionTitle);
+    centerColumn.appendChild(subtitle);
+    
+    const rightColumn = document.createElement('div');
+    rightColumn.style.display = 'flex';
+    rightColumn.style.flexDirection = 'column';
+    rightColumn.style.alignItems = 'center';
+    rightColumn.style.justifyContent = 'center';
+    rightColumn.style.textAlign = 'center';
+    rightColumn.style.width = '25%';
+    
+    const playTitle = document.createElement('div');
+    playTitle.className = 'play-title';
+    playTitle.style.fontFamily = '"Segoe UI", Helvetica, Arial, sans-serif';
+    playTitle.style.fontSize = '16px';
+    playTitle.style.color = '#333';
+    playTitle.style.marginBottom = '10px';
+    playTitle.textContent = t('startGame');
+    
+    const playButton = document.createElement('div');
+    playButton.style.width = '50px';
+    playButton.style.height = '50px';
+    playButton.style.borderRadius = '50%';
+    playButton.style.backgroundColor = 'white';
+    playButton.style.border = '2px solid #e0e0e0';
+    playButton.style.display = 'flex';
+    playButton.style.alignItems = 'center';
+    playButton.style.justifyContent = 'center';
+    playButton.style.cursor = 'pointer';
+    playButton.style.pointerEvents = 'auto';
+    playButton.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)';
+    playButton.innerHTML = '&#9654;';
+    
+    playButton.addEventListener('click', (event) => {
+        event.preventDefault();
+        console.log('Lancement de l\'expérience demandé par l\'utilisateur');
+        startGalleryTransition();
+    });
+    
+    playButton.addEventListener('mouseenter', () => {
+        playButton.style.backgroundColor = '#4CAF50';
+        playButton.style.color = 'white';
+        playButton.style.transform = 'scale(1.1)';
+        playButton.style.transition = 'all 0.3s ease';
+    });
+    
+    playButton.addEventListener('mouseleave', () => {
+        playButton.style.backgroundColor = 'white';
+        playButton.style.color = '#333';
+        playButton.style.transform = 'scale(1)';
+    });
+    
+    rightColumn.appendChild(playTitle);
+    rightColumn.appendChild(playButton);
+    
+    bottomPanel.appendChild(leftColumn);
+    bottomPanel.appendChild(centerColumn);
+    bottomPanel.appendChild(rightColumn);
+    
+    const menuButton = document.createElement('div');
+    menuButton.style.position = 'absolute';
+    menuButton.style.top = '20px';
+    menuButton.style.left = '20px';
+    menuButton.style.width = '40px';
+    menuButton.style.height = '40px';
+    menuButton.style.backgroundColor = 'white';
+    menuButton.style.borderRadius = '50%';
+    menuButton.style.display = 'flex';
+    menuButton.style.alignItems = 'center';
+    menuButton.style.justifyContent = 'center';
+    menuButton.style.cursor = 'pointer';
+    menuButton.style.pointerEvents = 'auto';
+    menuButton.style.zIndex = '100';
+    menuButton.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
+    menuButton.innerHTML = '☰';
+    
+    const menuPanel = document.createElement('div');
+    menuPanel.style.position = 'absolute';
+    menuPanel.style.top = '70px';
+    menuPanel.style.left = '20px';
+    menuPanel.style.backgroundColor = 'white';
+    menuPanel.style.borderRadius = '10px';
+    menuPanel.style.display = 'none';
+    menuPanel.style.flexDirection = 'column';
+    menuPanel.style.padding = '10px 0';
+    menuPanel.style.zIndex = '100';
+    menuPanel.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+    
+    // Éléments du menu déroulant avec fonctionnalités
+    const menuItems = [
+        { 
+            key: 'home', 
+            action: () => {
+                // Remettre à zéro la vue
+                if (transitionState === 'menu') {
+                    camera.position.set(0, 0, 5);
+                    camera.lookAt(0, 0, 0);
+                    controls.reset();
+                }
+            }
+        },
+        { 
+            key: 'about', 
+            action: () => {
+                // Afficher les informations sur le projet
+                const aboutModal = document.createElement('div');
+                aboutModal.style.cssText = `
+                    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                    background: rgba(0, 0, 0, 0.8); z-index: 1000; display: flex;
+                    align-items: center; justify-content: center; padding: 20px;
+                `;
+                aboutModal.innerHTML = `
+                    <div style="background: white; padding: 30px; border-radius: 15px; max-width: 500px;">
+                        <h2 style="margin: 0 0 15px 0; color: #333;">${currentLanguage === 'fr' ? 'À propos du projet' : 'About the project'}</h2>
+                        <p style="line-height: 1.6; color: #666; margin-bottom: 20px;">
+                            ${currentLanguage === 'fr' ? 
+                                'Ce projet explore les illusions d\'optique liées à la perception des couleurs, créé par Néha et Dounia dans le cadre d\'un projet tuteuré universitaire.' :
+                                'This project explores optical illusions related to color perception, created by Néha and Dounia as part of a university tutored project.'
+                            }
+                        </p>
+                        <button onclick="this.parentElement.parentElement.remove()" style="
+                            background: #667eea; color: white; border: none; padding: 10px 20px;
+                            border-radius: 5px; cursor: pointer; float: right;
+                        ">${currentLanguage === 'fr' ? 'Fermer' : 'Close'}</button>
+                    </div>
+                `;
+                document.body.appendChild(aboutModal);
+                aboutModal.addEventListener('click', (e) => {
+                    if (e.target === aboutModal) aboutModal.remove();
+                });
+            }
+        },
+        { 
+            key: 'settings', 
+            action: () => {
+                // Afficher les paramètres (contrôles, qualité, etc.)
+                const settingsModal = document.createElement('div');
+                settingsModal.style.cssText = `
+                    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                    background: rgba(0, 0, 0, 0.8); z-index: 1000; display: flex;
+                    align-items: center; justify-content: center; padding: 20px;
+                `;
+                settingsModal.innerHTML = `
+                    <div style="background: white; padding: 30px; border-radius: 15px; max-width: 400px;">
+                        <h2 style="margin: 0 0 15px 0; color: #333;">${currentLanguage === 'fr' ? 'Paramètres' : 'Settings'}</h2>
+                        <div style="margin-bottom: 15px;">
+                            <label style="display: block; margin-bottom: 5px; color: #666;">
+                                ${currentLanguage === 'fr' ? 'Qualité graphique :' : 'Graphics quality:'}
+                            </label>
+                            <select style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                                <option>${currentLanguage === 'fr' ? 'Élevée' : 'High'}</option>
+                                <option>${currentLanguage === 'fr' ? 'Moyenne' : 'Medium'}</option>
+                                <option>${currentLanguage === 'fr' ? 'Faible' : 'Low'}</option>
+                            </select>
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 5px; color: #666;">
+                                <input type="checkbox" checked> ${currentLanguage === 'fr' ? 'Effets visuels' : 'Visual effects'}
+                            </label>
+                            <label style="display: block; margin-bottom: 5px; color: #666;">
+                                <input type="checkbox" checked> ${currentLanguage === 'fr' ? 'Particules' : 'Particles'}
+                            </label>
+                        </div>
+                        <button onclick="this.parentElement.parentElement.remove()" style="
+                            background: #667eea; color: white; border: none; padding: 10px 20px;
+                            border-radius: 5px; cursor: pointer; float: right;
+                        ">${currentLanguage === 'fr' ? 'Fermer' : 'Close'}</button>
+                    </div>
+                `;
+                document.body.appendChild(settingsModal);
+                settingsModal.addEventListener('click', (e) => {
+                    if (e.target === settingsModal) settingsModal.remove();
+                });
+            }
+        },
+        { 
+            key: 'help', 
+            action: () => {
+                // Afficher l'aide et les contrôles
+                const helpModal = document.createElement('div');
+                helpModal.style.cssText = `
+                    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                    background: rgba(0, 0, 0, 0.8); z-index: 1000; display: flex;
+                    align-items: center; justify-content: center; padding: 20px;
+                `;
+                helpModal.innerHTML = `
+                    <div style="background: white; padding: 30px; border-radius: 15px; max-width: 500px;">
+                        <h2 style="margin: 0 0 15px 0; color: #333;">${currentLanguage === 'fr' ? 'Aide & Contrôles' : 'Help & Controls'}</h2>
+                        <div style="line-height: 1.6; color: #666;">
+                            <h4>${currentLanguage === 'fr' ? 'Contrôles de la souris :' : 'Mouse controls:'}</h4>
+                            <ul>
+                                <li>${currentLanguage === 'fr' ? 'Clic gauche + glisser : Faire tourner la vue' : 'Left click + drag: Rotate view'}</li>
+                                <li>${currentLanguage === 'fr' ? 'Survol du cube : Effet interactif' : 'Hover cube: Interactive effect'}</li>
+                                <li>${currentLanguage === 'fr' ? 'Clic sur le bouton Play : Démarrer l\'expérience' : 'Click Play button: Start experience'}</li>
+                            </ul>
+                            <h4>${currentLanguage === 'fr' ? 'Navigation :' : 'Navigation:'}</h4>
+                            <ul>
+                                <li>${currentLanguage === 'fr' ? 'Flèches ← → : Navigation dans les expériences' : 'Arrow keys ← →: Navigate experiments'}</li>
+                                <li>${currentLanguage === 'fr' ? 'Espace : Lancer une expérience' : 'Space: Launch experiment'}</li>
+                                <li>${currentLanguage === 'fr' ? 'Échap : Retour ou fermer' : 'Escape: Back or close'}</li>
+                           </ul>
+                       </div>
+                       <button onclick="this.parentElement.parentElement.remove()" style="
+                           background: #667eea; color: white; border: none; padding: 10px 20px;
+                           border-radius: 5px; cursor: pointer; float: right;
+                       ">${currentLanguage === 'fr' ? 'Fermer' : 'Close'}</button>
+                   </div>
+               `;
+               document.body.appendChild(helpModal);
+               helpModal.addEventListener('click', (e) => {
+                   if (e.target === helpModal) helpModal.remove();
+               });
+           }
+       },
+       { 
+           key: 'credits', 
+           action: () => {
+               // Afficher les crédits
+               const creditsModal = document.createElement('div');
+               creditsModal.style.cssText = `
+                   position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                   background: rgba(0, 0, 0, 0.8); z-index: 1000; display: flex;
+                   align-items: center; justify-content: center; padding: 20px;
+               `;
+               creditsModal.innerHTML = `
+                   <div style="background: white; padding: 30px; border-radius: 15px; max-width: 500px; text-align: center;">
+                       <h2 style="margin: 0 0 20px 0; color: #333;">${currentLanguage === 'fr' ? 'Crédits' : 'Credits'}</h2>
+                       <div style="line-height: 1.8; color: #666;">
+                           <h4 style="color: #667eea; margin: 15px 0 10px 0;">${currentLanguage === 'fr' ? 'Idées' : 'Ideas'}</h4>
+                           <p>Néha & Dounia</p>
+                           
+                           <h4 style="color: #667eea; margin: 15px 0 10px 0;">${currentLanguage === 'fr' ? 'Développement et Musique' : 'Development & Music'}</h4>
+                           <p>Dounia</p>
+                           
+                           <h4 style="color: #667eea; margin: 15px 0 10px 0;">${currentLanguage === 'fr' ? 'Technologies utilisées' : 'Technologies used'}</h4>
+                           <p>Three.js, WebGL, GSAP, JavaScript ES6+</p>
+                           
+                           <h4 style="color: #667eea; margin: 15px 0 10px 0;">${currentLanguage === 'fr' ? 'Références scientifiques' : 'Scientific references'}</h4>
+                           <p>Michel-Eugène Chevreul, Edwin Land, Edward Adelson, Richard Gregory</p>
+                           
+                           <h4 style="color: #667eea; margin: 15px 0 10px 0;">${currentLanguage === 'fr' ? 'Remerciements' : 'Acknowledgments'}</h4>
+                           <p>${currentLanguage === 'fr' ? 'Université Paris 8- Projet tuteuré 2024' : 'University Paris 8 - Tutored Project 2025'}</p>
+                       </div>
+                       <button onclick="this.parentElement.parentElement.remove()" style="
+                           background: #667eea; color: white; border: none; padding: 10px 20px;
+                           border-radius: 5px; cursor: pointer; margin-top: 15px;
+                       ">${currentLanguage === 'fr' ? 'Fermer' : 'Close'}</button>
+                   </div>
+               `;
+               document.body.appendChild(creditsModal);
+               creditsModal.addEventListener('click', (e) => {
+                   if (e.target === creditsModal) creditsModal.remove();
+               });
+           }
+       }
+   ];
    
-   window.portalParticles = particleSystem;
-   window.particleVelocities = velocities;
-}
-
-// Fonction d'animation des particules du portail
-function animatePortal() {
-   if (!window.portalParticles) return;
-   
-   // Animation continue des particules autour de la porte
-   const positions = window.portalParticles.geometry.attributes.position.array;
-   const velocities = window.particleVelocities;
-   const time = Date.now() * 0.001;
-   
-   for (let i = 0; i < positions.length / 3; i++) {
-       const i3 = i * 3;
-       const v = velocities[i];
-       
-       // Mouvement orbital autour de la structure de porte
-       v.angle += v.speed;
-       
-       // Ondulation subtile autour des positions de base
-       const waveOffset = Math.sin(time * 0.6 + i * 0.04) * 0.15;
-       
-       // Maintien des particules dans leur zone avec mouvement fluide
-       positions[i3] = v.originalX + Math.cos(v.angle + time * 0.3) * waveOffset;
-       positions[i3 + 2] = -6 + Math.sin(v.angle + time * 0.2) * (waveOffset * 0.6);
-       
-       // Animation verticale pour les montants de la porte
-       positions[i3 + 1] = v.originalY + Math.sin(time * 1.2 + v.angle) * 0.12;
-       
-       // Déplacement général pour maintenir la vivacité
-       positions[i3] += v.x;
-       positions[i3 + 1] += v.verticalSpeed * 0.8;
-       positions[i3 + 2] += v.z;
-       
-       // Système de rebond pour garder les particules dans la zone
-       if (positions[i3] < -7 || positions[i3] > 7) v.x = -v.x;
-       if (positions[i3 + 1] < -5 || positions[i3 + 1] > 5) v.verticalSpeed = -v.verticalSpeed;
-       if (positions[i3 + 2] < -9 || positions[i3 + 2] > -3) v.z = -v.z;
-   }
-   
-   window.portalParticles.geometry.attributes.position.needsUpdate = true;
-   
-   // Animation de l'éclairage avec pulsation naturelle
-   if (window.portalLight) {
-       const lightPulse = 2.8 + 0.5 * Math.sin(time * 0.8);
-       window.portalLight.intensity = lightPulse;
-   }
-   
-   if (window.portalGlow) {
-       const glowPulse = 1.8 + 0.4 * Math.sin(time * 0.6);
-       window.portalGlow.intensity = glowPulse;
-   }
-   
-   // Pulsation de l'ombre au sol
-   if (window.portalShadow) {
-       const shadowPulse = 1 + 0.12 * Math.sin(time * 0.7);
-       window.portalShadow.scale.set(shadowPulse, shadowPulse, 1);
-   }
-}
-
-// Gestion de la visibilité des éléments selon l'état
-function updatePortalVisibility() {
-   if (transitionState === 'white_room' || transitionState === 'approaching_portal' || transitionState === 'transitioning') {
-       // Activation de tous les éléments du portail
-       if (portalMesh) portalMesh.visible = true;
-       if (window.portalLight) window.portalLight.visible = true;
-       if (window.portalGlow) window.portalGlow.visible = true;
-       if (window.portalShadow) window.portalShadow.visible = true;
-       if (window.portalParticles) window.portalParticles.visible = true;
-       if (cube) cube.visible = false;
-       if (base) base.visible = false;
-       
-       // Lancement de l'animation du portail
-       animatePortal();
-   } else {
-       // Mode menu - masquage du portail
-       if (portalMesh) portalMesh.visible = false;
-       if (window.portalLight) window.portalLight.visible = false;
-       if (window.portalGlow) window.portalGlow.visible = false;
-       if (window.portalShadow) window.portalShadow.visible = false;
-       if (window.portalParticles) window.portalParticles.visible = false;
-       if (cube) cube.visible = true;
-       if (base) base.visible = true;
-   }
-}
-
-// Construction de l'interface utilisateur principale
-function createMenuElements() {
-   // Titre principal en en-tête
-   const mainTitle = document.createElement('div');
-   mainTitle.style.position = 'absolute';
-   mainTitle.style.top = '5%';
-   mainTitle.style.left = '50%';
-   mainTitle.style.transform = 'translateX(-50%)';
-   mainTitle.style.color = 'white';
-   mainTitle.style.fontFamily = '"Segoe UI", Helvetica, Arial, sans-serif';
-   mainTitle.style.fontSize = '38px';
-   mainTitle.style.fontWeight = '600';
-   mainTitle.style.letterSpacing = '3px';
-   mainTitle.style.textAlign = 'center';
-   mainTitle.style.textTransform = 'uppercase';
-   mainTitle.style.textShadow = '0 2px 4px rgba(0,0,0,0.3)';
-   mainTitle.style.zIndex = '100';
-   mainTitle.textContent = 'COLOR PERCEPTION';
-   
-   // Panneau de contrôle inférieur
-   const bottomPanel = document.createElement('div');
-   bottomPanel.style.position = 'absolute';
-   bottomPanel.style.bottom = '0';
-   bottomPanel.style.left = '50%';
-   bottomPanel.style.transform = 'translateX(-50%)';
-   bottomPanel.style.width = '80%';
-   bottomPanel.style.height = '120px';
-   bottomPanel.style.backgroundColor = 'white';
-   bottomPanel.style.borderTopLeftRadius = '15px';
-   bottomPanel.style.borderTopRightRadius = '15px';
-   bottomPanel.style.boxShadow = '0 -2px 10px rgba(0,0,0,0.1)';
-   bottomPanel.style.display = 'flex';
-   bottomPanel.style.justifyContent = 'space-around';
-   bottomPanel.style.alignItems = 'center';
-   bottomPanel.style.padding = '10px 30px';
-   bottomPanel.style.zIndex = '90';
-   
-   // Section contrôle audio
-   const leftColumn = document.createElement('div');
-   leftColumn.style.display = 'flex';
-   leftColumn.style.flexDirection = 'column';
-   leftColumn.style.alignItems = 'center';
-   leftColumn.style.justifyContent = 'center';
-   leftColumn.style.textAlign = 'center';
-   leftColumn.style.width = '25%';
-   
-   const soundTitle = document.createElement('div');
-   soundTitle.style.fontFamily = '"Segoe UI", Helvetica, Arial, sans-serif';
-   soundTitle.style.fontSize = '16px';
-   soundTitle.style.color = '#333';
-   soundTitle.style.marginBottom = '10px';
-   soundTitle.textContent = 'Sound Control';
-   
-   const soundButton = document.createElement('div');
-   soundButton.style.width = '50px';
-   soundButton.style.height = '50px';
-   soundButton.style.borderRadius = '50%';
-   soundButton.style.backgroundColor = 'white';
-   soundButton.style.border = '2px solid #e0e0e0';
-   soundButton.style.display = 'flex';
-   soundButton.style.alignItems = 'center';
-   soundButton.style.justifyContent = 'center';
-   soundButton.style.cursor = 'pointer';
-   soundButton.style.pointerEvents = 'auto';
-   soundButton.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)';
-   soundButton.innerHTML = '&#128266;';
-   
-   leftColumn.appendChild(soundTitle);
-   leftColumn.appendChild(soundButton);
-   
-   // Section centrale d'information
-   const centerColumn = document.createElement('div');
-   centerColumn.style.display = 'flex';
-   centerColumn.style.flexDirection = 'column';
-   centerColumn.style.alignItems = 'center';
-   centerColumn.style.justifyContent = 'center';
-   centerColumn.style.textAlign = 'center';
-   centerColumn.style.width = '50%';
-   
-   const colorPerceptionTitle = document.createElement('div');
-   colorPerceptionTitle.style.fontFamily = '"Segoe UI", Helvetica, Arial, sans-serif';
-   colorPerceptionTitle.style.fontSize = '24px';
-   colorPerceptionTitle.style.fontWeight = 'bold';
-   colorPerceptionTitle.style.color = '#333';
-   colorPerceptionTitle.style.letterSpacing = '2px';
-   colorPerceptionTitle.textContent = 'COLOR PERCEPTION';
-   
-   const subtitle = document.createElement('div');
-   subtitle.style.fontFamily = '"Segoe UI", Helvetica, Arial, sans-serif';
-   subtitle.style.fontSize = '14px';
-   subtitle.style.color = '#666';
-   subtitle.style.marginTop = '5px';
-   subtitle.textContent = 'An interactive experience';
-   
-   centerColumn.appendChild(colorPerceptionTitle);
-   centerColumn.appendChild(subtitle);
-   
-   // Section de lancement du jeu
-   const rightColumn = document.createElement('div');
-   rightColumn.style.display = 'flex';
-   rightColumn.style.flexDirection = 'column';
-   rightColumn.style.alignItems = 'center';
-   rightColumn.style.justifyContent = 'center';
-   rightColumn.style.textAlign = 'center';
-   rightColumn.style.width = '25%';
-   
-   const playTitle = document.createElement('div');
-   playTitle.style.fontFamily = '"Segoe UI", Helvetica, Arial, sans-serif';
-   playTitle.style.fontSize = '16px';
-   playTitle.style.color = '#333';
-   playTitle.style.marginBottom = '10px';
-   playTitle.textContent = 'Start Game';
-   
-   const playButton = document.createElement('div');
-   playButton.style.width = '50px';
-   playButton.style.height = '50px';
-   playButton.style.borderRadius = '50%';
-   playButton.style.backgroundColor = 'white';
-   playButton.style.border = '2px solid #e0e0e0';
-   playButton.style.display = 'flex';
-   playButton.style.alignItems = 'center';
-   playButton.style.justifyContent = 'center';
-   playButton.style.cursor = 'pointer';
-   playButton.style.pointerEvents = 'auto';
-   playButton.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)';
-   playButton.innerHTML = '&#9654;';
-   
-   // Gestionnaire d'événement pour le bouton de lancement
-   playButton.addEventListener('click', (event) => {
-       event.preventDefault();
-       console.log('Lancement de l\'expérience demandé par l\'utilisateur');
-       startGalleryTransition();
-   });
-   
-   // Effets visuels au survol du bouton
-   playButton.addEventListener('mouseenter', () => {
-       playButton.style.backgroundColor = '#4CAF50';
-       playButton.style.color = 'white';
-       playButton.style.transform = 'scale(1.1)';
-       playButton.style.transition = 'all 0.3s ease';
-   });
-   
-   playButton.addEventListener('mouseleave', () => {
-       playButton.style.backgroundColor = 'white';
-       playButton.style.color = '#333';
-       playButton.style.transform = 'scale(1)';
-   });
-   
-   rightColumn.appendChild(playTitle);
-   rightColumn.appendChild(playButton);
-   
-   // Assembly des colonnes dans le panneau
-   bottomPanel.appendChild(leftColumn);
-   bottomPanel.appendChild(centerColumn);
-   bottomPanel.appendChild(rightColumn);
-   
-   // Menu de navigation principal
-   const menuButton = document.createElement('div');
-   menuButton.style.position = 'absolute';
-   menuButton.style.top = '20px';
-   menuButton.style.left = '20px';
-   menuButton.style.width = '40px';
-   menuButton.style.height = '40px';
-   menuButton.style.backgroundColor = 'white';
-   menuButton.style.borderRadius = '50%';
-   menuButton.style.display = 'flex';
-   menuButton.style.alignItems = 'center';
-   menuButton.style.justifyContent = 'center';
-   menuButton.style.cursor = 'pointer';
-   menuButton.style.pointerEvents = 'auto';
-   menuButton.style.zIndex = '100';
-   menuButton.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
-   menuButton.innerHTML = '☰';
-   
-   const menuPanel = document.createElement('div');
-   menuPanel.style.position = 'absolute';
-   menuPanel.style.top = '70px';
-   menuPanel.style.left = '20px';
-   menuPanel.style.backgroundColor = 'white';
-   menuPanel.style.borderRadius = '10px';
-   menuPanel.style.display = 'none';
-   menuPanel.style.flexDirection = 'column';
-   menuPanel.style.padding = '10px 0';
-   menuPanel.style.zIndex = '100';
-   menuPanel.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
-   
-   // Éléments du menu déroulant
-   const menuItems = ['Home', 'About', 'Levels', 'Settings', 'Help'];
-   menuItems.forEach(item => {
+   menuItems.forEach((item, index) => {
        const menuItem = document.createElement('div');
+       menuItem.className = 'menu-item';
        menuItem.style.fontFamily = '"Segoe UI", Helvetica, Arial, sans-serif';
        menuItem.style.fontSize = '16px';
        menuItem.style.padding = '10px 20px';
        menuItem.style.cursor = 'pointer';
        menuItem.style.pointerEvents = 'auto';
        menuItem.style.transition = 'background-color 0.2s';
-       menuItem.textContent = item;
+       menuItem.textContent = t(item.key);
        
        menuItem.addEventListener('mouseover', () => {
            menuItem.style.backgroundColor = '#f5f5f5';
@@ -972,10 +1487,14 @@ function createMenuElements() {
            menuItem.style.backgroundColor = 'white';
        });
        
+       menuItem.addEventListener('click', () => {
+           item.action();
+           menuPanel.style.display = 'none';
+       });
+       
        menuPanel.appendChild(menuItem);
    });
    
-   // Gestion du menu déroulant
    menuButton.addEventListener('click', () => {
        if (menuPanel.style.display === 'none' || menuPanel.style.display === '') {
            menuPanel.style.display = 'flex';
@@ -984,13 +1503,11 @@ function createMenuElements() {
        }
    });
    
-   // Intégration des éléments dans l'interface
    interfaceContainer.appendChild(mainTitle);
    interfaceContainer.appendChild(bottomPanel);
    interfaceContainer.appendChild(menuButton);
    interfaceContainer.appendChild(menuPanel);
    
-   // Fermeture automatique du menu au clic extérieur
    document.addEventListener('click', (event) => {
        if (!menuButton.contains(event.target) && !menuPanel.contains(event.target)) {
            menuPanel.style.display = 'none';
@@ -998,7 +1515,7 @@ function createMenuElements() {
    });
 }
 
-// Socle de présentation pour le cube
+// Reste du code identique (socle, contrôles, cube, etc.)
 const baseGeometry = new THREE.BoxGeometry(3, 0.3, 3);
 const baseMaterial = new THREE.MeshStandardMaterial({ 
    color: 0xffffff,
@@ -1009,7 +1526,6 @@ const base = new THREE.Mesh(baseGeometry, baseMaterial);
 base.position.y = -0.5;
 scene.add(base);
 
-// Configuration des contrôles de caméra
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
@@ -1021,7 +1537,6 @@ controls.minPolarAngle = Math.PI / 4;
 controls.maxPolarAngle = Math.PI / 2.5;
 controls.update();
 
-// Système d'éclairage de la scène principale
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 directionalLight.position.set(5, 10, 7);
 scene.add(directionalLight);
@@ -1029,404 +1544,395 @@ scene.add(directionalLight);
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
 scene.add(ambientLight);
 
-// Palette de couleurs pour les transitions du cube
 const pastelColors = [
-  { top: new THREE.Color(0xffffff), bottom: new THREE.Color(0xffdddd) }, // Blanc-rose
-  { top: new THREE.Color(0xffffff), bottom: new THREE.Color(0xddffdd) }, // Blanc-vert pastel
-  { top: new THREE.Color(0xffffff), bottom: new THREE.Color(0xdde5ff) }, // Blanc-bleu pastel
-  { top: new THREE.Color(0xffffff), bottom: new THREE.Color(0xf5ddff) }, // Blanc-lavande
-  { top: new THREE.Color(0xffffff), bottom: new THREE.Color(0xfff2dd) }, // Blanc-pêche
-  { top: new THREE.Color(0xffffff), bottom: new THREE.Color(0xe9ddff) }  // Blanc-violet pastel
+   { top: new THREE.Color(0xffffff), bottom: new THREE.Color(0xffdddd) },
+   { top: new THREE.Color(0xffffff), bottom: new THREE.Color(0xddffdd) },
+   { top: new THREE.Color(0xffffff), bottom: new THREE.Color(0xdde5ff) },
+   { top: new THREE.Color(0xffffff), bottom: new THREE.Color(0xf5ddff) },
+   { top: new THREE.Color(0xffffff), bottom: new THREE.Color(0xfff2dd) },
+   { top: new THREE.Color(0xffffff), bottom: new THREE.Color(0xe9ddff) }
 ];
 
 let currentColorIndex = 0;
 let targetTopColor = pastelColors[currentColorIndex].top.clone();
 let targetBottomColor = pastelColors[currentColorIndex].bottom.clone();
 
-// Shader personnalisé pour les effets visuels du cube
 const cubeShaderMaterial = new THREE.ShaderMaterial({
-  uniforms: {
-      time: { value: 0 },
-      mousePos: { value: new THREE.Vector2(0.5, 0.5) },
-      mouseInfluence: { value: 0 },
-      topColor: { value: new THREE.Color(0xffffff) },
-      bottomColor: { value: new THREE.Color(0xffdddd) },
-      colorTransition: { value: 0.0 }
-  },
-  vertexShader: `
-      uniform float time;
-      uniform vec2 mousePos;
-      uniform float mouseInfluence;
-      
-      varying vec2 vUv;
-      varying vec3 vPosition;
-      varying vec3 vNormal;
-      
-      // Implémentation du bruit de Perlin pour les déformations
-      vec3 permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
+   uniforms: {
+       time: { value: 0 },
+       mousePos: { value: new THREE.Vector2(0.5, 0.5) },
+       mouseInfluence: { value: 0 },
+       topColor: { value: new THREE.Color(0xffffff) },
+       bottomColor: { value: new THREE.Color(0xffdddd) },
+       colorTransition: { value: 0.0 }
+   },
+   vertexShader: `
+       uniform float time;
+       uniform vec2 mousePos;
+       uniform float mouseInfluence;
+       
+       varying vec2 vUv;
+       varying vec3 vPosition;
+       varying vec3 vNormal;
+       
+       vec3 permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
 
-      float snoise(vec2 v) {
-          const vec4 C = vec4(0.211324865405187, 0.366025403784439,
-                            -0.577350269189626, 0.024390243902439);
-          vec2 i  = floor(v + dot(v, C.yy));
-          vec2 x0 = v -   i + dot(i, C.xx);
-          vec2 i1;
-          i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
-          vec4 x12 = x0.xyxy + C.xxzz;
-          x12.xy -= i1;
-          i = mod(i, 289.0);
-          vec3 p = permute(permute(i.y + vec3(0.0, i1.y, 1.0))
-                         + i.x + vec3(0.0, i1.x, 1.0));
-          vec3 m = max(0.5 - vec3(dot(x0, x0), dot(x12.xy, x12.xy),
-                                dot(x12.zw, x12.zw)), 0.0);
-          m = m*m;
-          m = m*m;
-          vec3 x = 2.0 * fract(p * C.www) - 1.0;
-          vec3 h = abs(x) - 0.5;
-          vec3 ox = floor(x + 0.5);
-          vec3 a0 = x - ox;
-          m *= 1.79284291400159 - 0.85373472095314 * (a0*a0 + h*h);
-          vec3 g;
-          g.x  = a0.x  * x0.x  + h.x  * x0.y;
-          g.yz = a0.yz * x12.xz + h.yz * x12.yw;
-          return 130.0 * dot(m, g);
-      }
-      
-      void main() {
-          vUv = uv;
-          vPosition = position;
-          vNormal = normal;
-          
-          // Calcul des déformations basées sur la hauteur
-          float yInfluence = (position.y + 1.0) / 2.0;
-          
-          // Génération des vagues de base
-          float baseWaves = snoise(vec2(position.x * 10.0 + position.z * 10.0, position.y * 5.0 + time)) * 0.05;
-          
-          // Lignes horizontales périodiques
-          float horizontalLines = sin(position.y * 50.0) * 0.03;
-          
-          // Combinaison des déformations
-          vec3 displacement = normal * (baseWaves + horizontalLines * (1.0 - yInfluence * 0.8));
-          
-          // Effet interactif au contact de la souris
-          if (mouseInfluence > 0.0) {
-              vec2 faceUV = vec2(0.0);
-              
-              if (abs(normal.z) > 0.9) {
-                  faceUV = vec2(position.x, position.y);
-              } else if (abs(normal.x) > 0.9) {
-                  faceUV = vec2(position.z, position.y);
-              } else if (abs(normal.y) > 0.9) {
-                  faceUV = vec2(position.x, position.z);
-              }
-              
-              faceUV = faceUV * 0.5 + 0.5;
-              
-              float distToMouse = distance(faceUV, mousePos);
-              
-              // Génération d'ondes concentriques au point d'interaction
-              float waveRadius = 0.4;
-              if (distToMouse < waveRadius) {
-                  float waveStrength = (1.0 - distToMouse / waveRadius) * mouseInfluence * 0.4;
-                  
-                  float wave1 = sin((1.0 - distToMouse / waveRadius) * 15.0 - time * 2.0);
-                  float wave2 = sin((1.0 - distToMouse / waveRadius) * 30.0 - time * 3.0) * 0.5;
-                  
-                  float combinedWave = wave1 + wave2;
-                  
-                  displacement += normal * combinedWave * waveStrength;
-              }
-          }
-          
-          vec3 newPosition = position + displacement;
-          
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
-      }
-  `,
-  fragmentShader: `
-      uniform vec3 topColor;
-      uniform vec3 bottomColor;
-      uniform float mouseInfluence;
-      uniform vec2 mousePos;
-      uniform float colorTransition;
-      
-      varying vec2 vUv;
-      varying vec3 vPosition;
-      varying vec3 vNormal;
-      
-      void main() {
-          // Gradient vertical de couleur
-          float t = (vPosition.y + 1.0) / 2.0;
-          
-          // Effet de réflexion sur les arêtes
-          float edgeEffect = pow(1.0 - abs(dot(normalize(vNormal), vec3(0.0, 0.0, 1.0))), 2.0);
-          
-          vec3 color = mix(bottomColor, topColor, t);
-          
-          // Ajout d'iridescence subtile
-          color += vec3(0.05, 0.07, 0.1) * edgeEffect;
-          
-          // Zone d'influence interactive
-          vec2 faceUV = vec2(0.0);
-          if (abs(vNormal.z) > 0.9) {
-              faceUV = vec2(vPosition.x, vPosition.y);
-          } else if (abs(vNormal.x) > 0.9) {
-              faceUV = vec2(vPosition.z, vPosition.y);
-          } else if (abs(vNormal.y) > 0.9) {
-              faceUV = vec2(vPosition.x, vPosition.z);
-          }
-          
-          faceUV = faceUV * 0.5 + 0.5;
-          
-          // Effet de brillance au point d'interaction
-          float distToMouse = distance(faceUV, mousePos);
-          float glow = smoothstep(0.4, 0.0, distToMouse) * mouseInfluence * 0.3;
-          
-          color += vec3(0.2, 0.2, 0.3) * glow;
-          
-          gl_FragColor = vec4(color, 1.0);
-      }
-  `,
-  side: THREE.DoubleSide
+       float snoise(vec2 v) {
+           const vec4 C = vec4(0.211324865405187, 0.366025403784439,
+                             -0.577350269189626, 0.024390243902439);
+           vec2 i  = floor(v + dot(v, C.yy));
+           vec2 x0 = v -   i + dot(i, C.xx);
+           vec2 i1;
+           i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+           vec4 x12 = x0.xyxy + C.xxzz;
+           x12.xy -= i1;
+           i = mod(i, 289.0);
+           vec3 p = permute(permute(i.y + vec3(0.0, i1.y, 1.0))
+                          + i.x + vec3(0.0, i1.x, 1.0));
+           vec3 m = max(0.5 - vec3(dot(x0, x0), dot(x12.xy, x12.xy),
+                                 dot(x12.zw, x12.zw)), 0.0);
+           m = m*m;
+           m = m*m;
+           vec3 x = 2.0 * fract(p * C.www) - 1.0;
+           vec3 h = abs(x) - 0.5;
+           vec3 ox = floor(x + 0.5);
+           vec3 a0 = x - ox;
+           m *= 1.79284291400159 - 0.85373472095314 * (a0*a0 + h*h);
+           vec3 g;
+           g.x  = a0.x  * x0.x  + h.x  * x0.y;
+           g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+           return 130.0 * dot(m, g);
+       }
+       
+       void main() {
+           vUv = uv;
+           vPosition = position;
+           vNormal = normal;
+           
+           float yInfluence = (position.y + 1.0) / 2.0;
+           
+           float baseWaves = snoise(vec2(position.x * 10.0 + position.z * 10.0, position.y * 5.0 + time)) * 0.05;
+           
+           float horizontalLines = sin(position.y * 50.0) * 0.03;
+           
+           vec3 displacement = normal * (baseWaves + horizontalLines * (1.0 - yInfluence * 0.8));
+           
+           if (mouseInfluence > 0.0) {
+               vec2 faceUV = vec2(0.0);
+               
+               if (abs(normal.z) > 0.9) {
+                   faceUV = vec2(position.x, position.y);
+               } else if (abs(normal.x) > 0.9) {
+                   faceUV = vec2(position.z, position.y);
+               } else if (abs(normal.y) > 0.9) {
+                   faceUV = vec2(position.x, position.z);
+               }
+               
+               faceUV = faceUV * 0.5 + 0.5;
+               
+               float distToMouse = distance(faceUV, mousePos);
+               
+               float waveRadius = 0.4;
+               if (distToMouse < waveRadius) {
+                   float waveStrength = (1.0 - distToMouse / waveRadius) * mouseInfluence * 0.4;
+                   
+                   float wave1 = sin((1.0 - distToMouse / waveRadius) * 15.0 - time * 2.0);
+                   float wave2 = sin((1.0 - distToMouse / waveRadius) * 30.0 - time * 3.0) * 0.5;
+                   
+                   float combinedWave = wave1 + wave2;
+                   
+                   displacement += normal * combinedWave * waveStrength;
+               }
+           }
+           
+           vec3 newPosition = position + displacement;
+           
+           gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+       }
+   `,
+   fragmentShader: `
+       uniform vec3 topColor;
+       uniform vec3 bottomColor;
+       uniform float mouseInfluence;
+       uniform vec2 mousePos;
+       uniform float colorTransition;
+       
+       varying vec2 vUv;
+       varying vec3 vPosition;
+       varying vec3 vNormal;
+       
+       void main() {
+           float t = (vPosition.y + 1.0) / 2.0;
+           
+           float edgeEffect = pow(1.0 - abs(dot(normalize(vNormal), vec3(0.0, 0.0, 1.0))), 2.0);
+           
+           vec3 color = mix(bottomColor, topColor, t);
+           
+           color += vec3(0.05, 0.07, 0.1) * edgeEffect;
+           
+           vec2 faceUV = vec2(0.0);
+           if (abs(vNormal.z) > 0.9) {
+               faceUV = vec2(vPosition.x, vPosition.y);
+           } else if (abs(vNormal.x) > 0.9) {
+               faceUV = vec2(vPosition.z, vPosition.y);
+           } else if (abs(vNormal.y) > 0.9) {
+               faceUV = vec2(vPosition.x, vPosition.z);
+           }
+           
+           faceUV = faceUV * 0.5 + 0.5;
+           
+           float distToMouse = distance(faceUV, mousePos);
+           float glow = smoothstep(0.4, 0.0, distToMouse) * mouseInfluence * 0.3;
+           
+           color += vec3(0.2, 0.2, 0.3) * glow;
+           
+           gl_FragColor = vec4(color, 1.0);
+       }
+   `,
+   side: THREE.DoubleSide
 });
 
-// Création du cube principal avec géométrie haute définition
 const cubeGeometry = new THREE.BoxGeometry(2, 2, 2, 64, 64, 64);
 const cube = new THREE.Mesh(cubeGeometry, cubeShaderMaterial);
 cube.position.y = 0.5;
 scene.add(cube);
 
-// Variables pour la gestion des interactions
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 let mouseIsOverCube = false;
 let lastInteractionTime = 0;
 let colorChangeReady = true;
 
-// Fonction de transition entre les couleurs du cube
 function transitionToNextColor() {
-  if (!colorChangeReady || transitionState !== 'menu') return;
-  
-  currentColorIndex = (currentColorIndex + 1) % pastelColors.length;
-  
-  targetTopColor = pastelColors[currentColorIndex].top.clone();
-  targetBottomColor = pastelColors[currentColorIndex].bottom.clone();
-  
-  // Animation de transition fluide
-  const startTopColor = cubeShaderMaterial.uniforms.topColor.value.clone();
-  const startBottomColor = cubeShaderMaterial.uniforms.bottomColor.value.clone();
-  
-  const duration = 1.0;
-  const startTime = Date.now();
-  
-  colorChangeReady = false;
-  
-  function updateColor() {
-      const now = Date.now();
-      const progress = Math.min((now - startTime) / (duration * 1000), 1.0);
-      const easedProgress = easeOutCubic(progress);
+   if (!colorChangeReady || transitionState !== 'menu') return;
+   
+   currentColorIndex = (currentColorIndex + 1) % pastelColors.length;
+   
+   targetTopColor = pastelColors[currentColorIndex].top.clone();
+   targetBottomColor = pastelColors[currentColorIndex].bottom.clone();
+   
+   const startTopColor = cubeShaderMaterial.uniforms.topColor.value.clone();
+   const startBottomColor = cubeShaderMaterial.uniforms.bottomColor.value.clone();
+   
+   const duration = 1.0;
+   const startTime = Date.now();
+   
+   colorChangeReady = false;
+   
+   function updateColor() {
+       const now = Date.now();
+       const progress = Math.min((now - startTime) / (duration * 1000), 1.0);
+       const easedProgress = easeOutCubic(progress);
 
-      cubeShaderMaterial.uniforms.topColor.value.lerpColors(
-          startTopColor, 
-          targetTopColor, 
-          easedProgress
-      );
-      
-      cubeShaderMaterial.uniforms.bottomColor.value.lerpColors(
-          startBottomColor, 
-          targetBottomColor, 
-          easedProgress
-      );
-      
-      if (progress < 1.0) {
-          requestAnimationFrame(updateColor);
-      } else {
-          colorChangeReady = true;
-      }
-  }
-  
-  updateColor();
+       cubeShaderMaterial.uniforms.topColor.value.lerpColors(
+           startTopColor, 
+           targetTopColor, 
+           easedProgress
+       );
+       
+       cubeShaderMaterial.uniforms.bottomColor.value.lerpColors(
+           startBottomColor, 
+           targetBottomColor, 
+           easedProgress
+       );
+       
+       if (progress < 1.0) {
+           requestAnimationFrame(updateColor);
+       } else {
+           colorChangeReady = true;
+       }
+   }
+   
+   updateColor();
 }
 
-// Gestionnaire des interactions souris avec le cube
 window.addEventListener('mousemove', (event) => {
-  if (transitionState !== 'menu') return;
-  
-  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-  
-  raycaster.setFromCamera(mouse, camera);
-  const intersects = raycaster.intersectObject(cube);
-  
-  if (intersects.length > 0) {
-      controls.autoRotate = false;
-      
-      if (!mouseIsOverCube) {
-          const now = Date.now();
-          if (now - lastInteractionTime > 500) {
-              transitionToNextColor();
-              lastInteractionTime = now;
-          }
-      }
-      
-      mouseIsOverCube = true;
-      
-      const intersect = intersects[0];
-      const face = intersect.face;
-      const point = intersect.point;
-      
-      let faceUV = new THREE.Vector2();
-      
-      // Calcul des coordonnées UV selon la face touchée
-      if (Math.abs(face.normal.z) > 0.9) {
-          faceUV.x = (point.x + 1) * 0.5;
-          faceUV.y = (point.y + 1) * 0.5;
-      } else if (Math.abs(face.normal.x) > 0.9) {
-          faceUV.x = (point.z + 1) * 0.5;
-          faceUV.y = (point.y + 1) * 0.5;
-      } else if (Math.abs(face.normal.y) > 0.9) {
-          faceUV.x = (point.x + 1) * 0.5;
-          faceUV.y = (point.z + 1) * 0.5;
-      }
-      
-      cubeShaderMaterial.uniforms.mousePos.value.copy(faceUV);
-      
-      gsapLike(cubeShaderMaterial.uniforms.mouseInfluence, 'value', 1.0, 0.2);
-      
-      document.body.style.cursor = 'pointer';
-  } else {
-      controls.autoRotate = true;
-      
-      if (mouseIsOverCube) {
-          mouseIsOverCube = false;
-      }
-      
-      gsapLike(cubeShaderMaterial.uniforms.mouseInfluence, 'value', 0.0, 0.5);
-      
-      document.body.style.cursor = 'default';
-  }
+   if (transitionState !== 'menu') return;
+   
+   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+   
+   raycaster.setFromCamera(mouse, camera);
+   const intersects = raycaster.intersectObject(cube);
+   
+   if (intersects.length > 0) {
+       controls.autoRotate = false;
+       
+       if (!mouseIsOverCube) {
+           const now = Date.now();
+           if (now - lastInteractionTime > 500) {
+               transitionToNextColor();
+               lastInteractionTime = now;
+           }
+       }
+       
+       mouseIsOverCube = true;
+       
+       const intersect = intersects[0];
+       const face = intersect.face;
+       const point = intersect.point;
+       
+       let faceUV = new THREE.Vector2();
+       
+       if (Math.abs(face.normal.z) > 0.9) {
+           faceUV.x = (point.x + 1) * 0.5;
+           faceUV.y = (point.y + 1) * 0.5;
+       } else if (Math.abs(face.normal.x) > 0.9) {
+           faceUV.x = (point.z + 1) * 0.5;
+           faceUV.y = (point.y + 1) * 0.5;
+       } else if (Math.abs(face.normal.y) > 0.9) {
+           faceUV.x = (point.x + 1) * 0.5;
+           faceUV.y = (point.z + 1) * 0.5;
+       }
+       
+       cubeShaderMaterial.uniforms.mousePos.value.copy(faceUV);
+       
+       gsapLike(cubeShaderMaterial.uniforms.mouseInfluence, 'value', 1.0, 0.2);
+       
+       document.body.style.cursor = 'pointer';
+   } else {
+       controls.autoRotate = true;
+       
+       if (mouseIsOverCube) {
+           mouseIsOverCube = false;
+       }
+       
+       gsapLike(cubeShaderMaterial.uniforms.mouseInfluence, 'value', 0.0, 0.5);
+       
+       document.body.style.cursor = 'default';
+   }
 });
 
-// Fonction d'animation personnalisée (alternative à GSAP)
 function gsapLike(object, property, targetValue, duration) {
-  if (window.gsap) {
-      gsap.to(object, {
-          duration: duration,
-          [property]: targetValue,
-          ease: "power2.out"
-      });
-  } else {
-      const startValue = object[property];
-      const startTime = Date.now();
-      
-      function update() {
-        const now = Date.now();
-        if (now >= startTime + duration * 1000) {
-            object[property] = targetValue;
-            return;
-        }
-        
-        const progress = (now - startTime) / (duration * 1000);
-        const easedProgress = easeOutCubic(progress);
-        object[property] = startValue + (targetValue - startValue) * easedProgress;
-        
-        requestAnimationFrame(update);
-    }
-    
-    update();
-}
+   if (window.gsap) {
+       gsap.to(object, {
+           duration: duration,
+           [property]: targetValue,
+           ease: "power2.out"
+       });
+   } else {
+       const startValue = object[property];
+       const startTime = Date.now();
+       
+       function update() {
+           const now = Date.now();
+           if (now >= startTime + duration * 1000) {
+               object[property] = targetValue;
+               return;
+           }
+           
+           const progress = (now - startTime) / (duration * 1000);
+           const easedProgress = easeOutCubic(progress);
+           object[property] = startValue + (targetValue - startValue) * easedProgress;
+           
+           requestAnimationFrame(update);
+       }
+       
+       update();
+   }
 }
 
-// Fonction d'interpolation pour les animations
 function easeOutCubic(x) {
-return 1 - Math.pow(1 - x, 3);
+   return 1 - Math.pow(1 - x, 3);
 }
 
-// Gestion des contrôles clavier dans la pièce blanche
+// Gestion des contrôles clavier améliorée
 document.addEventListener('keydown', (event) => {
-if (transitionState === 'white_room' && whiteRoomReady && explanationStep >= 5) {
-    if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        startPortalApproach();
-    }
-}
+   // Navigation dans l'introduction
+   if (variableIntroduction && transitionState === 'white_room') {
+       switch(event.key) {
+           case 'ArrowLeft':
+               event.preventDefault();
+               variableIntroduction.previousStep();
+               break;
+           case 'ArrowRight':
+               event.preventDefault();
+               variableIntroduction.nextStep();
+               break;
+           case 'Enter':
+           case ' ':
+               if (whiteRoomReady && explanationStep >= 5) {
+                   event.preventDefault();
+                   startPortalApproach();
+               }
+               break;
+       }
+   }
 });
 
-// Boucle d'animation principale
 function animate() {
- requestAnimationFrame(animate);
- 
- // Mise à jour des temps pour les shaders
- cubeShaderMaterial.uniforms.time.value += 0.01;
- portalShaderMaterial.uniforms.iTime.value += 0.016;
- 
- // Gestion de l'affichage selon l'état de l'application
- updatePortalVisibility();
- 
- // Mise à jour des contrôles seulement en mode menu
- if (transitionState === 'menu') {
-     controls.update();
- }
- 
- renderer.render(scene, camera);
+   requestAnimationFrame(animate);
+   
+   cubeShaderMaterial.uniforms.time.value += 0.01;
+   portalShaderMaterial.uniforms.iTime.value += 0.016;
+   
+   updatePortalVisibility();
+   
+   if (transitionState === 'menu') {
+       controls.update();
+   }
+   
+   renderer.render(scene, camera);
 }
 
-// Feuille de style intégrée
 const style = document.createElement('style');
 style.innerHTML = `
 body, html {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+   margin: 0;
+   padding: 0;
+   width: 100%;
+   height: 100%;
+   overflow: hidden;
+   font-family: "Segoe UI", Helvetica, Arial, sans-serif;
 }
 #canvas {
-    display: block;
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 1;
+   display: block;
+   width: 100%;
+   height: 100%;
+   position: absolute;
+   top: 0;
+   left: 0;
+   z-index: 1;
 }
 `;
 document.head.appendChild(style);
 
-// Variables globales pour le débogage et l'accès externe
 window.myCamera = camera;
 window.myControls = controls;
 window.getPortalState = () => ({ 
-transitionState, 
-whiteRoomReady,
-explanationStep
+   transitionState, 
+   whiteRoomReady,
+   explanationStep
 });
 
-// Fonction d'initialisation principale
 function init() {
-console.log('Système de portail dimensionnel - Initialisation');
-console.log('Séquence d\'expérience:');
-console.log('  1. Interface d\'accueil avec cube interactif');
-console.log('  2. Transition par zoom vers la pièce blanche');
-console.log('  3. Présentation du portail avec explications');
-console.log('  4. Traversée vers la galerie interactive');
+   console.log('Système de portail dimensionnel - Initialisation (Version Multilingue)');
+   console.log('Séquence d\'expérience:');
+   console.log('  1. Interface d\'accueil avec cube interactif et sélection de langue');
+   console.log('  2. Transition par zoom vers la pièce blanche');
+   console.log('  3. Introduction à rythme variable avec navigation');
+   console.log('  4. Traversée vers la galerie interactive améliorée');
 
-// Mise en place de la scène 3D
-initScene();
+   // Charger la langue sauvegardée
+   const savedLang = localStorage.getItem('colorPerceptionLang');
+   if (savedLang && translations[savedLang]) {
+       currentLanguage = savedLang;
+       document.getElementById('language-select-main').value = savedLang;
+   }
 
-// Construction de l'interface utilisateur
-createMenuElements();
+   // Event listener pour le changement de langue dans le menu principal
+   document.getElementById('language-select-main').addEventListener('change', (e) => {
+       changeLanguage(e.target.value);
+   });
 
-// Lancement de la boucle d'animation
-animate();
+   initScene();
+   createMenuElements();
+   updateUILanguage();
+   animate();
 }
 
-// Point d'entrée de l'application
 if (document.readyState === 'loading') {
-document.addEventListener('DOMContentLoaded', init);
+   document.addEventListener('DOMContentLoaded', init);
 } else {
-init();
+   init();
 }
-          

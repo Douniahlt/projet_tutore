@@ -5,11 +5,22 @@
     <title>Color Perception</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel = "stylesheet" type = "text/css" href = "style.css">
+    <link rel="stylesheet" href="guided-experience.css">
     
 </head>
 
 <body>
     <canvas id="canvas" width="800" height="600"></canvas>
+    
+    <!-- Sélecteur de langue dans le menu principal (amélioré) -->
+    <div id="language-menu-main">
+        <span class="globe-icon">🌐</span>
+        <select id="language-select-main">
+            <option value="fr">Français</option>
+            <option value="en">English</option>
+        </select>
+    </div>
+    
     <script type="importmap">
         {
             "imports": {
@@ -19,20 +30,24 @@
         }
     }
     </script>
-    <!--     <script src="three.module.min.js"></script> -->
     <script type="module" src="./js/script.js"></script>
+    <script src="./js/guided-experience.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <!-- À ajouter juste avant la fermeture du tag body -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.150.0/build/three.min.js"></script>
     <script src="./js/game-enhancements.js"></script>
-    <!--  
-    <div id="text-container"></div>
-        <p id="text-content">Premier texte affiché</p></div>
-    </div></div>
-    <p id="textElement" class="smoky-text">texte ici</p>
-    <button onclick="changeText(1)">➡</button>
-    <button onclick="changeText(-1)">⬅</button>-->
-
     
-      
+    <script>
+        // Script pour ajouter de l'animation au changement de langue
+        document.getElementById('language-select-main').addEventListener('change', function() {
+            const languageMenu = document.getElementById('language-menu-main');
+            languageMenu.classList.add('language-flash');
+            
+            setTimeout(() => {
+                languageMenu.classList.remove('language-flash');
+            }, 600);
+            
+            // Le code de changement de langue existant reste ici
+        });
+    </script>
 </body>
 </html>

@@ -1,82 +1,169 @@
 #text-container {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 24px;
-    color: white;
-    background: rgba(0, 0, 0, 0.5);
-    padding: 10px 20px;
-    border-radius: 10px;
-    text-align: center;
-    opacity: 1;
-    transition: opacity 0.5s ease-in-out;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  color: white;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 10px 20px;
+  border-radius: 10px;
+  text-align: center;
+  opacity: 1;
+  transition: opacity 0.5s ease-in-out;
 }
 
 .fade-out {
-    opacity: 0;
+  opacity: 0;
 }
+
 @keyframes smoke-out {
-    0% {
-      opacity: 1;
-      filter: blur(0px);
-      transform: translate(0, 0);
-    }
-    25% {
-      opacity: 0.8;
-      filter: blur(2px);
-      transform: translateX(-5px) translateY(-10px) rotate(-2deg);
-    }
-    50% {
-      opacity: 0.5;
-      filter: blur(5px);
-      transform: translateX(10px) translateY(-20px) rotate(3deg);
-    }
-    75% {
-      opacity: 0.2;
-      filter: blur(8px);
-      transform: translateX(-15px) translateY(-30px) rotate(-5deg);
-    }
-    100% {
-      opacity: 0;
-      filter: blur(10px);
-      transform: translateX(20px) translateY(-40px) rotate(8deg);
-    }
-  }
-  
-  @keyframes smoke-in {
-    0% {
-      opacity: 0;
-      filter: blur(10px);
-      transform: translateX(20px) translateY(-40px) rotate(8deg);
-    }
-    25% {
-      opacity: 0.2;
-      filter: blur(8px);
-      transform: translateX(-15px) translateY(-30px) rotate(-5deg);
-    }
-    50% {
-      opacity: 0.5;
-      filter: blur(5px);
-      transform: translateX(10px) translateY(-20px) rotate(3deg);
-    }
-    75% {
-      opacity: 0.8;
-      filter: blur(2px);
-      transform: translateX(-5px) translateY(-10px) rotate(-2deg);
-    }
-    100% {
-      opacity: 1;
-      filter: blur(0px);
-      transform: translate(0, 0);
-    }
-  }
-  
-  .smoke-out {
-    animation: smoke-out 0.5s ease-out forwards;
-  }
-  
-  .smoke-in {
-    animation: smoke-in 0.5s ease-in forwards;
+  0% {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translate(0, 0);
   }
 
+  25% {
+    opacity: 0.8;
+    filter: blur(2px);
+    transform: translateX(-5px) translateY(-10px) rotate(-2deg);
+  }
+
+  50% {
+    opacity: 0.5;
+    filter: blur(5px);
+    transform: translateX(10px) translateY(-20px) rotate(3deg);
+  }
+
+  75% {
+    opacity: 0.2;
+    filter: blur(8px);
+    transform: translateX(-15px) translateY(-30px) rotate(-5deg);
+  }
+
+  100% {
+    opacity: 0;
+    filter: blur(10px);
+    transform: translateX(20px) translateY(-40px) rotate(8deg);
+  }
+}
+
+@keyframes smoke-in {
+  0% {
+    opacity: 0;
+    filter: blur(10px);
+    transform: translateX(20px) translateY(-40px) rotate(8deg);
+  }
+
+  25% {
+    opacity: 0.2;
+    filter: blur(8px);
+    transform: translateX(-15px) translateY(-30px) rotate(-5deg);
+  }
+
+  50% {
+    opacity: 0.5;
+    filter: blur(5px);
+    transform: translateX(10px) translateY(-20px) rotate(3deg);
+  }
+
+  75% {
+    opacity: 0.8;
+    filter: blur(2px);
+    transform: translateX(-5px) translateY(-10px) rotate(-2deg);
+  }
+
+  100% {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translate(0, 0);
+  }
+}
+
+.smoke-out {
+  animation: smoke-out 0.5s ease-out forwards;
+}
+
+.smoke-in {
+  animation: smoke-in 0.5s ease-in forwards;
+}
+
+#language-menu-main {
+  position: absolute;
+  top: 25px;
+  right: 35px;
+  z-index: 150;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 25px;
+  padding: 8px 15px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2), 0 0 10px rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+}
+
+#language-menu-main:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25), 0 0 15px rgba(255, 255, 255, 0.2);
+}
+
+#language-menu-main .globe-icon {
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  animation: pulse 2s infinite ease-in-out;
+}
+
+#language-select-main {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+  padding: 3px 6px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  letter-spacing: 0.5px;
+}
+
+#language-select-main option {
+  background: #333;
+  color: white;
+  font-weight: 600;
+  padding: 8px;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+/* Animation lorsqu'on change de langue */
+.language-flash {
+  animation: languageChanged 0.6s ease-out;
+}
+
+@keyframes languageChanged {
+  0% {
+    background: rgba(255, 255, 255, 0.6);
+  }
+
+  100% {
+    background: rgba(255, 255, 255, 0.25);
+  }
+}
