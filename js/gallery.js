@@ -7,17 +7,17 @@ const translations = {
         exitBtn: "✕",
         exitTitle: "Retour au menu",
         startGame: "Commencer l'expérience",
-        
+
         // Titres des checkpoints
         checkpoint1Title: "Introduction au Contraste",
         checkpoint1Desc: "Découvrez comment notre perception des couleurs est influencée par leur environnement.",
-        checkpoint2Title: "Illusion de Luminosité", 
+        checkpoint2Title: "Illusion de Luminosité",
         checkpoint2Desc: "Découvrez comment un dégradé peut tromper votre perception des couleurs identiques.",
         checkpoint3Title: "Adaptation Chromatique",
         checkpoint3Desc: "Comprenez comment notre œil s'adapte aux différentes sources lumineuses.",
         checkpoint4Title: "Illusions Contextuelles",
         checkpoint4Desc: "Observez comment le contexte modifie notre perception des couleurs.",
-        
+
         // Explications scientifiques
         exp1Title: "Le Contraste Simultané de Chevreul",
         exp1Content: `
@@ -47,22 +47,22 @@ const translations = {
             <p>Référence : <strong>Richard Gregory</strong> (1997) - "Visual Illusions Classified"</p>
             <p><a href="https://www.illusionsindex.org/" target="_blank" style="color: #FFD700;">📖 Index des illusions</a></p>
         `,
-        
+
         // Boutons communs
         launchExperience: "Lancer l'Expérience",
         skip: "Passer",
         close: "✕",
-        
+
         // Expérience 1
         exp1GameTitle: "Expérience : Contraste Simultané",
         exp1Question1: "Question 1 sur 3",
-        exp1Question2: "Question 2 sur 3", 
+        exp1Question2: "Question 2 sur 3",
         exp1Question3: "Question 3 sur 3",
         exp1QuestionText1: "Lequel de ces carrés vous paraît le plus foncé ?",
         exp1QuestionText2: "Et maintenant, lequel semble le plus foncé ?",
         exp1QuestionText3: "Dernière question : lequel paraît le plus foncé ?",
         exp1AnswerLeft: "Carré de Gauche",
-        exp1AnswerEqual: "Ils sont identiques", 
+        exp1AnswerEqual: "Ils sont identiques",
         exp1AnswerRight: "Carré de Droite",
         exp1FeedbackCorrect: "<strong>Bonne intuition !</strong> Le carré de droite semble effectivement plus foncé.",
         exp1FeedbackIncorrect: "<strong>Pas cette fois !</strong> C'est le carré de droite qui paraît plus foncé à la plupart des gens.",
@@ -76,7 +76,7 @@ const translations = {
         exp1SquareLabel: "Couleur des carrés :",
         exp1Brightness: "Luminosité",
         exp1Gray: "Gris",
-        
+
         // Expérience 2
         exp2GameTitle: "Expérience : Illusion de Luminosité",
         exp2Instruction: "Ajustez le curseur pour que les deux carrés vous paraissent de même luminosité :",
@@ -89,12 +89,12 @@ const translations = {
         exp2Perfect: "<strong>Parfait !</strong> Les deux carrés ont exactement la même couleur (128) mais paraissent différents à cause du dégradé !",
         exp2Different: "Avec votre réglage actuel ({value}), les carrés ont des valeurs différentes. La solution est 128 - ils paraissent différents même quand ils sont identiques !",
         exp2TechExplanation: "Le dégradé d'arrière-plan crée une <strong>illusion de contraste</strong> qui trompe votre perception. Votre cerveau compare les couleurs relativement à leur environnement local.",
-        
+
         // Expérience 3
         exp3GameTitle: "Expérience : Adaptation Chromatique",
         exp3Instruction: "Observez ces objets sous différents éclairages. Votre œil va s'adapter progressivement.",
         exp3Paper: "Papier",
-        exp3Apple: "Pomme", 
+        exp3Apple: "Pomme",
         exp3Leaf: "Feuille",
         exp3ChangeSlowly: "Changez l'éclairage lentement :",
         exp3Daylight: "☀️ Lumière du Jour",
@@ -109,18 +109,18 @@ const translations = {
         exp3AdaptationSubtitle: "Adaptation chromatique :",
         exp3AdaptationText: "Votre cerveau ajuste progressivement sa perception pour maintenir la constance des couleurs. Cette adaptation prend du temps (quelques minutes) et explique pourquoi vous ne remarquez pas immédiatement les changements d'éclairage.",
         exp3Reference: "<strong>Référence scientifique :</strong> Edwin Land (1977) - \"The Retinex Theory of Color Vision\"<br/><strong>Application pratique :</strong> C'est pourquoi les photos paraissent parfois \"trop jaunes\" ou \"trop bleues\" - votre appareil photo n'a pas notre capacité d'adaptation !",
-        
+
         // Expérience 4
         exp4GameTitle: "Expérience : L'Effet du Contexte Chromatique",
         exp4Question: "<strong>Question :</strong> Classez ces cercles du plus clair au plus foncé",
         exp4Instruction: "Glissez et déposez les cercles dans l'ordre que vous percevez",
         exp4CircleA: "Cercle A",
-        exp4CircleB: "Cercle B", 
+        exp4CircleB: "Cercle B",
         exp4CircleC: "Cercle C",
         exp4DragInstruction: "Glissez les cercles dans les cases ci-dessous :",
         exp4Rank1: "Plus clair",
         exp4Rank2: "Moyen",
-        exp4Rank3: "Plus foncé", 
+        exp4Rank3: "Plus foncé",
         exp4ValidateAnswer: "Valider ma Réponse",
         exp4ValidateComplete: "✅ Valider ma Réponse",
         exp4ValidateProgress: "Valider ma Réponse ({current}/3)",
@@ -133,7 +133,7 @@ const translations = {
         exp4TruthText: "Les trois cercles sont exactement de la même couleur grise (#888888) !",
         exp4WhyTitle: "🧠 Pourquoi cela arrive-t-il ?",
         exp4Reference: "<strong>Référence scientifique :</strong> Richard Gregory (1997) - \"Visual Illusions Classified\"<br/><strong>Application pratique :</strong> C'est pourquoi choisir une couleur de peinture sur un petit échantillon peut être trompeur !",
-        
+
         // Messages système
         returningToMenu: "Retour au menu...",
         transitionInProgress: "Transition vers {light} en cours... (8 secondes)",
@@ -141,7 +141,7 @@ const translations = {
         backgroundsNeutralized: "🔍 Arrière-plans neutralisés !<br/>Maintenant les cercles paraissent-ils identiques ?",
         contextsRestored: "🎨 Contextes rétablis !<br/>L'illusion reprend effet immédiatement.",
         brutalChange: "Changement brutal vers {temp} !",
-        
+
         // Menu langue
         language: "Langue",
         french: "Français",
@@ -154,7 +154,7 @@ const translations = {
         exitBtn: "✕",
         exitTitle: "Back to menu",
         startGame: "Start Experience",
-        
+
         // Checkpoint titles
         checkpoint1Title: "Introduction to Contrast",
         checkpoint1Desc: "Discover how our color perception is influenced by their environment.",
@@ -164,7 +164,7 @@ const translations = {
         checkpoint3Desc: "Understand how our eye adapts to different light sources.",
         checkpoint4Title: "Contextual Illusions",
         checkpoint4Desc: "Observe how context modifies our color perception.",
-        
+
         // Scientific explanations
         exp1Title: "Chevreul's Simultaneous Contrast",
         exp1Content: `
@@ -194,12 +194,12 @@ const translations = {
             <p>Reference: <strong>Richard Gregory</strong> (1997) - "Visual Illusions Classified"</p>
             <p><a href="https://www.illusionsindex.org/" target="_blank" style="color: #FFD700;">📖 Illusions index</a></p>
         `,
-        
+
         // Common buttons
         launchExperience: "Launch Experience",
         skip: "Skip",
         close: "✕",
-        
+
         // Experience 1
         exp1GameTitle: "Experience: Simultaneous Contrast",
         exp1Question1: "Question 1 of 3",
@@ -223,7 +223,7 @@ const translations = {
         exp1SquareLabel: "Square color:",
         exp1Brightness: "Brightness",
         exp1Gray: "Gray",
-        
+
         // Experience 2
         exp2GameTitle: "Experience: Brightness Illusion",
         exp2Instruction: "Adjust the slider so both squares appear to have the same brightness:",
@@ -236,7 +236,7 @@ const translations = {
         exp2Perfect: "<strong>Perfect!</strong> Both squares have exactly the same color (128) but appear different due to the gradient!",
         exp2Different: "With your current setting ({value}), the squares have different values. The solution is 128 - they appear different even when identical!",
         exp2TechExplanation: "The background gradient creates a <strong>contrast illusion</strong> that deceives your perception. Your brain compares colors relative to their local environment.",
-        
+
         // Experience 3
         exp3GameTitle: "Experience: Chromatic Adaptation",
         exp3Instruction: "Observe these objects under different lighting. Your eye will adapt gradually.",
@@ -256,7 +256,7 @@ const translations = {
         exp3AdaptationSubtitle: "Chromatic adaptation:",
         exp3AdaptationText: "Your brain gradually adjusts its perception to maintain color constancy. This adaptation takes time (several minutes) and explains why you don't immediately notice lighting changes.",
         exp3Reference: "<strong>Scientific reference:</strong> Edwin Land (1977) - \"The Retinex Theory of Color Vision\"<br/><strong>Practical application:</strong> This is why photos sometimes appear \"too yellow\" or \"too blue\" - your camera doesn't have our adaptation ability!",
-        
+
         // Experience 4
         exp4GameTitle: "Experience: Chromatic Context Effect",
         exp4Question: "<strong>Question:</strong> Rank these circles from lightest to darkest",
@@ -280,7 +280,7 @@ const translations = {
         exp4TruthText: "All three circles are exactly the same gray color (#888888)!",
         exp4WhyTitle: "🧠 Why does this happen?",
         exp4Reference: "<strong>Scientific reference:</strong> Richard Gregory (1997) - \"Visual Illusions Classified\"<br/><strong>Practical application:</strong> This is why choosing paint color from a small sample can be misleading!",
-        
+
         // System messages
         returningToMenu: "Returning to menu...",
         transitionInProgress: "Transition to {light} in progress... (8 seconds)",
@@ -288,10 +288,10 @@ const translations = {
         backgroundsNeutralized: "🔍 Backgrounds neutralized!<br/>Do the circles now appear identical?",
         contextsRestored: "🎨 Contexts restored!<br/>The illusion takes effect immediately.",
         brutalChange: "Brutal change to {temp}!",
-        
+
         // Language menu
         language: "Language",
-        french: "Français", 
+        french: "Français",
         english: "English"
     }
 };
@@ -306,12 +306,12 @@ let currentLanguage = 'fr'; // Langue par défaut
 // Fonction pour obtenir une traduction
 function t(key, params = {}) {
     let text = translations[currentLanguage][key] || translations['fr'][key] || key;
-    
+
     // Remplacer les paramètres dans le texte
     Object.keys(params).forEach(param => {
         text = text.replace(`{${param}}`, params[param]);
     });
-    
+
     return text;
 }
 
@@ -328,14 +328,14 @@ function updateUILanguage() {
     const checkpointTitle = document.getElementById('checkpoint-title');
     const checkpointDescription = document.getElementById('checkpoint-description');
     const startGameBtn = document.getElementById('start-game');
-    
+
     if (checkpointTitle && checkpointDescription && startGameBtn) {
         const checkpoint = checkpoints[currentCheckpoint];
         checkpointTitle.textContent = t(checkpoint.titleKey);
         checkpointDescription.textContent = t(checkpoint.descKey);
         startGameBtn.textContent = t('startGame');
     }
-    
+
     // Mettre à jour les boutons de navigation
     const exitBtn = document.getElementById('exit-btn');
     if (exitBtn) {
@@ -357,7 +357,7 @@ const checkpoints = [
     },
     {
         titleKey: "checkpoint2Title",
-        descKey: "checkpoint2Desc", 
+        descKey: "checkpoint2Desc",
         position: 10,
         explanation: {
             titleKey: "exp2Title",
@@ -370,7 +370,7 @@ const checkpoints = [
         descKey: "checkpoint3Desc",
         position: 20,
         explanation: {
-            titleKey: "exp3Title", 
+            titleKey: "exp3Title",
             contentKey: "exp3Content"
         },
         miniGameType: "white-balance"
@@ -391,8 +391,8 @@ const checkpoints = [
 const canvas = document.getElementById('gallery-canvas');
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({ 
-    canvas: canvas, 
+const renderer = new THREE.WebGLRenderer({
+    canvas: canvas,
     antialias: true,
     powerPreference: "high-performance"
 });
@@ -538,9 +538,9 @@ let userResponses = [];
 
 // Système d'explications détaillées
 function createExplanationModal() {
-   const modal = document.createElement('div');
-   modal.id = 'explanation-modal';
-   modal.style.cssText = `
+    const modal = document.createElement('div');
+    modal.id = 'explanation-modal';
+    modal.style.cssText = `
        position: fixed;
        top: 0;
        left: 0;
@@ -554,9 +554,9 @@ function createExplanationModal() {
        align-items: center;
        padding: 20px;
    `;
-   
-   const content = document.createElement('div');
-   content.style.cssText = `
+
+    const content = document.createElement('div');
+    content.style.cssText = `
        max-width: 600px;
        max-height: 80vh;
        background: linear-gradient(135deg, rgba(20, 20, 40, 0.95), rgba(40, 20, 60, 0.95));
@@ -569,8 +569,8 @@ function createExplanationModal() {
        overflow-y: auto;
        text-align: left;
    `;
-   
-   content.innerHTML = `
+
+    content.innerHTML = `
        <h2 id="explanation-title" style="margin: 0 0 20px 0; font-size: 28px; color: #fff;"></h2>
        <div id="explanation-content" style="line-height: 1.6; font-size: 16px;"></div>
        <div style="margin-top: 30px; text-align: center;">
@@ -600,33 +600,33 @@ function createExplanationModal() {
            "></button>
        </div>
    `;
-   
-   modal.appendChild(content);
-   document.body.appendChild(modal);
-   
-   document.getElementById('start-mini-game').addEventListener('click', () => {
-       modal.style.display = 'none';
-       launchMiniGame(checkpoints[currentCheckpoint].miniGameType);
-   });
-   
-   document.getElementById('skip-explanation').addEventListener('click', () => {
-       modal.style.display = 'none';
-   });
-   
-   modal.addEventListener('click', (e) => {
-       if (e.target === modal) {
-           modal.style.display = 'none';
-       }
-   });
-   
-   return modal;
+
+    modal.appendChild(content);
+    document.body.appendChild(modal);
+
+    document.getElementById('start-mini-game').addEventListener('click', () => {
+        modal.style.display = 'none';
+        launchMiniGame(checkpoints[currentCheckpoint].miniGameType);
+    });
+
+    document.getElementById('skip-explanation').addEventListener('click', () => {
+        modal.style.display = 'none';
+    });
+
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+
+    return modal;
 }
 
 // Conteneur pour les mini-jeux
 function createMiniGameContainer() {
-   const container = document.createElement('div');
-   container.id = 'mini-game-container';
-   container.style.cssText = `
+    const container = document.createElement('div');
+    container.id = 'mini-game-container';
+    container.style.cssText = `
        position: fixed;
        top: 0;
        left: 0;  
@@ -640,8 +640,8 @@ function createMiniGameContainer() {
        padding: 20px;
        overflow: hidden;
    `;
-   
-   container.innerHTML = `
+
+    container.innerHTML = `
        <div style="
            width: 90%;
            max-width: 900px;
@@ -680,22 +680,22 @@ function createMiniGameContainer() {
            "></div>
        </div>
    `;
-   
-   document.body.appendChild(container);
-   
-   document.getElementById('close-mini-game').addEventListener('click', () => {
-       container.style.display = 'none';
-       currentMiniGame = null;
-   });
-   
-   return container;
+
+    document.body.appendChild(container);
+
+    document.getElementById('close-mini-game').addEventListener('click', () => {
+        container.style.display = 'none';
+        currentMiniGame = null;
+    });
+
+    return container;
 }
 
 // Créer le menu de sélection de langue
 function createLanguageMenu() {
-   const languageMenu = document.createElement('div');
-   languageMenu.id = 'language-menu';
-   languageMenu.style.cssText = `
+    const languageMenu = document.createElement('div');
+    languageMenu.id = 'language-menu';
+    languageMenu.style.cssText = `
        position: absolute;
        top: 30px;
        left: 30px;
@@ -710,8 +710,8 @@ function createLanguageMenu() {
        gap: 10px;
        transition: all 0.3s ease;
    `;
-   
-   languageMenu.innerHTML = `
+
+    languageMenu.innerHTML = `
        <span style="color: white; font-size: 14px; font-weight: 600;">🌐</span>
        <select id="language-select" style="
            background: transparent;
@@ -726,15 +726,15 @@ function createLanguageMenu() {
            <option value="en" style="background: #333; color: white;">English</option>
        </select>
    `;
-   
-   document.body.appendChild(languageMenu);
-   
-   // Event listener pour le changement de langue
-   document.getElementById('language-select').addEventListener('change', (e) => {
-       changeLanguage(e.target.value);
-   });
-   
-   return languageMenu;
+
+    document.body.appendChild(languageMenu);
+
+    // Event listener pour le changement de langue
+    document.getElementById('language-select').addEventListener('change', (e) => {
+        changeLanguage(e.target.value);
+    });
+
+    return languageMenu;
 }
 
 // Créer les modales
@@ -744,91 +744,91 @@ const languageMenu = createLanguageMenu();
 
 // Afficher l'explication détaillée
 function showDetailedExplanation(checkpoint) {
-   const modal = document.getElementById('explanation-modal');
-   const title = document.getElementById('explanation-title');
-   const content = document.getElementById('explanation-content');
-   const startBtn = document.getElementById('start-mini-game');
-   const skipBtn = document.getElementById('skip-explanation');
-   
-   title.textContent = t(checkpoint.explanation.titleKey);
-   content.innerHTML = t(checkpoint.explanation.contentKey);
-   startBtn.textContent = t('launchExperience');
-   skipBtn.textContent = t('skip');
-   
-   modal.style.display = 'flex';
-   
-   if (window.gsap) {
-       gsap.fromTo(modal.children[0], 
-           { scale: 0.8, opacity: 0 },
-           { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(1.7)" }
-       );
-   }
+    const modal = document.getElementById('explanation-modal');
+    const title = document.getElementById('explanation-title');
+    const content = document.getElementById('explanation-content');
+    const startBtn = document.getElementById('start-mini-game');
+    const skipBtn = document.getElementById('skip-explanation');
+
+    title.textContent = t(checkpoint.explanation.titleKey);
+    content.innerHTML = t(checkpoint.explanation.contentKey);
+    startBtn.textContent = t('launchExperience');
+    skipBtn.textContent = t('skip');
+
+    modal.style.display = 'flex';
+
+    if (window.gsap) {
+        gsap.fromTo(modal.children[0],
+            { scale: 0.8, opacity: 0 },
+            { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(1.7)" }
+        );
+    }
 }
 
 // Lancer un mini-jeu selon le type
 function launchMiniGame(gameType) {
-   const container = document.getElementById('mini-game-container');
-   const content = document.getElementById('mini-game-content');
-   const closeBtn = document.getElementById('close-mini-game');
-   
-   closeBtn.textContent = t('close');
-   
-   currentMiniGame = gameType;
-   container.style.display = 'flex';
-   
-   contrastRevealed = false;
-   isolationState = false;
-   
-   switch(gameType) {
-       case 'contrast-comparison':
-           createImprovedContrastComparisonGame(content);
-           break;
-       case 'brightness-illusion':
-           createImprovedBrightnessIllusionGame(content);
-           break;
-       case 'white-balance':
-           createImprovedWhiteBalanceGame(content);
-           break;
-       case 'context-effect':
-           createImprovedContextEffectGame(content);
-           break;
-   }
-   
-   if (window.gsap) {
-       gsap.fromTo(container.children[0], 
-           { scale: 0.8, opacity: 0 },
-           { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(1.7)" }
-       );
-   }
+    const container = document.getElementById('mini-game-container');
+    const content = document.getElementById('mini-game-content');
+    const closeBtn = document.getElementById('close-mini-game');
+
+    closeBtn.textContent = t('close');
+
+    currentMiniGame = gameType;
+    container.style.display = 'flex';
+
+    contrastRevealed = false;
+    isolationState = false;
+
+    switch (gameType) {
+        case 'contrast-comparison':
+            createImprovedContrastComparisonGame(content);
+            break;
+        case 'brightness-illusion':
+            createImprovedBrightnessIllusionGame(content);
+            break;
+        case 'white-balance':
+            createImprovedWhiteBalanceGame(content);
+            break;
+        case 'context-effect':
+            createImprovedContextEffectGame(content);
+            break;
+    }
+
+    if (window.gsap) {
+        gsap.fromTo(container.children[0],
+            { scale: 0.8, opacity: 0 },
+            { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(1.7)" }
+        );
+    }
 }
 
 // AMÉLIORATION 1: Contraste Simultané avec questions avant révélation
 function createImprovedContrastComparisonGame(container) {
-   let currentQuestion = 0;
-   const questions = [
-       {
-           bgLeft: 0, bgRight: 255, gray: 128,
-           questionKey: "exp1QuestionText1",
-           correctAnswer: "right"
-       },
-       {
-           bgLeft: 85, bgRight: 255, gray: 90,
-           questionKey: "exp1QuestionText2",
-           correctAnswer: "right"
-       },
-       {
-           bgLeft: 0, bgRight: 255, gray: 35,
-           questionKey: "exp1QuestionText3",
-           correctAnswer: "right"
-       }
-   ];
-   
-   function showQuestion(questionIndex) {
-       const q = questions[questionIndex];
-       const questionTitle = questionIndex === 0 ? 'exp1Question1' : 
-                            questionIndex === 1 ? 'exp1Question2' : 'exp1Question3';
-       
-       container.innerHTML = `
+    let currentQuestion = 0;
+    const questions = [
+        {
+            bgLeft: 0, bgRight: 255, gray: 128,
+            questionKey: "exp1QuestionText1",
+            correctAnswer: "right"
+        },
+        {
+            bgLeft: 85, bgRight: 255, gray: 90,
+            questionKey: "exp1QuestionText2",
+            correctAnswer: "right"
+        },
+        {
+            bgLeft: 0, bgRight: 255, gray: 35,
+            questionKey: "exp1QuestionText3",
+            correctAnswer: "right"
+        }
+    ];
+
+    function showQuestion(questionIndex) {
+        const q = questions[questionIndex];
+        const questionTitle = questionIndex === 0 ? 'exp1Question1' :
+            questionIndex === 1 ? 'exp1Question2' : 'exp1Question3';
+
+        container.innerHTML = `
            <h2 style="text-align: center; margin-bottom: 20px;">${t(questionTitle)}</h2>
            <p style="text-align: center; margin-bottom: 30px; font-size: 18px;">${t(q.questionKey)}</p>
            
@@ -863,49 +863,49 @@ function createImprovedContrastComparisonGame(container) {
            
            <div id="question-feedback" style="display: none; margin-top: 20px; padding: 20px; border-radius: 10px; text-align: center;"></div>
        `;
-       
-       // Event listeners pour les réponses
-       const answerBtns = container.querySelectorAll('.answer-btn');
-       answerBtns.forEach(btn => {
-           btn.addEventListener('click', () => handleQuestionAnswer(btn.dataset.answer, q.correctAnswer, questionIndex));
-       });
-   }
-   
-   function handleQuestionAnswer(userAnswer, correctAnswer, questionIndex) {
-       const feedbackDiv = document.getElementById('question-feedback');
-       const allBtns = container.querySelectorAll('.answer-btn');
-       
-       // Désactiver tous les boutons
-       allBtns.forEach(btn => btn.style.pointerEvents = 'none');
-       
-       // Stocker la réponse
-       userResponses[questionIndex] = userAnswer;
-       
-       // Afficher feedback
-       const isCorrect = userAnswer === correctAnswer;
-       feedbackDiv.style.display = 'block';
-       feedbackDiv.style.background = isCorrect ? 
-           'linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(69, 160, 73, 0.1))' :
-           'linear-gradient(135deg, rgba(244, 67, 54, 0.2), rgba(211, 47, 47, 0.1))';
-       feedbackDiv.innerHTML = '<p>' + (isCorrect ? t('exp1FeedbackCorrect') : t('exp1FeedbackIncorrect')) + '</p>';
-       
-       // Bouton pour continuer
-       setTimeout(() => {
-           if (questionIndex < questions.length - 1) {
-               feedbackDiv.innerHTML += `<button onclick="nextQuestion()" style="margin-top: 15px; padding: 10px 20px; background: #667eea; border: none; border-radius: 15px; color: white; cursor: pointer;">${t('exp1NextQuestion')}</button>`;
-               window.nextQuestion = () => {
-                   currentQuestion++;
-                   showQuestion(currentQuestion);
-               };
-           } else {
-               feedbackDiv.innerHTML += `<button onclick="showFinalExplanation()" style="margin-top: 15px; padding: 10px 20px; background: #667eea; border: none; border-radius: 15px; color: white; cursor: pointer;">${t('exp1ShowExplanation')}</button>`;
-               window.showFinalExplanation = showContrastExplanation;
-           }
-       }, 1500);
-   }
-   
-   function showContrastExplanation() {
-       container.innerHTML = `
+
+        // Event listeners pour les réponses
+        const answerBtns = container.querySelectorAll('.answer-btn');
+        answerBtns.forEach(btn => {
+            btn.addEventListener('click', () => handleQuestionAnswer(btn.dataset.answer, q.correctAnswer, questionIndex));
+        });
+    }
+
+    function handleQuestionAnswer(userAnswer, correctAnswer, questionIndex) {
+        const feedbackDiv = document.getElementById('question-feedback');
+        const allBtns = container.querySelectorAll('.answer-btn');
+
+        // Désactiver tous les boutons
+        allBtns.forEach(btn => btn.style.pointerEvents = 'none');
+
+        // Stocker la réponse
+        userResponses[questionIndex] = userAnswer;
+
+        // Afficher feedback
+        const isCorrect = userAnswer === correctAnswer;
+        feedbackDiv.style.display = 'block';
+        feedbackDiv.style.background = isCorrect ?
+            'linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(69, 160, 73, 0.1))' :
+            'linear-gradient(135deg, rgba(244, 67, 54, 0.2), rgba(211, 47, 47, 0.1))';
+        feedbackDiv.innerHTML = '<p>' + (isCorrect ? t('exp1FeedbackCorrect') : t('exp1FeedbackIncorrect')) + '</p>';
+
+        // Bouton pour continuer
+        setTimeout(() => {
+            if (questionIndex < questions.length - 1) {
+                feedbackDiv.innerHTML += `<button onclick="nextQuestion()" style="margin-top: 15px; padding: 10px 20px; background: #667eea; border: none; border-radius: 15px; color: white; cursor: pointer;">${t('exp1NextQuestion')}</button>`;
+                window.nextQuestion = () => {
+                    currentQuestion++;
+                    showQuestion(currentQuestion);
+                };
+            } else {
+                feedbackDiv.innerHTML += `<button onclick="showFinalExplanation()" style="margin-top: 15px; padding: 10px 20px; background: #667eea; border: none; border-radius: 15px; color: white; cursor: pointer;">${t('exp1ShowExplanation')}</button>`;
+                window.showFinalExplanation = showContrastExplanation;
+            }
+        }, 1500);
+    }
+
+    function showContrastExplanation() {
+        container.innerHTML = `
            <h2 style="text-align: center; margin-bottom: 20px;">${t('exp1ExplanationTitle')}</h2>
            
            <div style="padding: 25px; background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 193, 7, 0.05)); border-radius: 15px; margin-bottom: 25px;">
@@ -935,58 +935,58 @@ function createImprovedContrastComparisonGame(container) {
                <div>${t('exp1Gray')} : <span id="square-value">128</span></div>
            </div>
            
-           <!-- Nouveau bouton "Voir +" -->
-           <!-- <div style="text-align: center; margin: 35px 0 25px;">-->
-           <!--     <a href="jeu_robe.html" style="-->
-           <!--         display: inline-block;-->
-           <!--         background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);-->
-           <!--         border: none;-->
-           <!--         border-radius: 25px;-->
-           <!--         padding: 15px 40px;-->
-           <!--         color: white;-->
-           <!--         font-size: 18px;-->
-           <!--         font-weight: bold;-->
-           <!--         cursor: pointer;-->
-           <!--         text-decoration: none;-->
-           <!--         box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);-->
-           <!--         transition: all 0.3s ease;-->
-           <!--     ">-->
-           <!--         <span style="display: flex; align-items: center; gap: 10px; justify-content: center;">-->
-           <!--             Voir + -->
-           <!--             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16" style="margin-top: 2px;">-->
-           <!--                 <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zM4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H4.5z"/>-->
-           <!--             </svg>-->
-           <!--         </span>-->
-           <!--     </a>-->
-           <!-- </div>-->
+           <!-- Nouveau bouton "La robe" -->
+         <div style="text-align: center; margin: 35px 0 25px;">
+             <a href="jeu_robe.html" style="
+                 display: inline-block;
+                 background: linear-gradient(135deg,rgb(117, 107, 255) 0%,rgb(83, 192, 255) 100%);
+                 border: none;
+                 border-radius: 25px;
+                 padding: 15px 40px;
+                 color: white;
+                 font-size: 18px;
+                 font-weight: bold;
+                 cursor: pointer;
+                 text-decoration: none;
+                 box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+                 transition: all 0.3s ease;
+             ">
+                 <span style="display: flex; align-items: center; gap: 10px; justify-content: center;">
+                     Cas d'Étude : La Robe
+                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16" style="margin-top: 2px;">
+                         <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zM4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H4.5z"/>
+                     </svg>
+                 </span>
+             </a>
+         </div>
        `;
-       
-       // Event listeners pour les sliders (code existant)
-       const bgSlider = document.getElementById('bg-slider');
-       const squareSlider = document.getElementById('square-slider');
-       const bgValue = document.getElementById('bg-value');
-       const squareValue = document.getElementById('square-value');
-       const bgLeft = document.getElementById('exp-bg-left');
-       const squareLeft = document.getElementById('exp-square-left');
-       const squareRight = document.getElementById('exp-square-right');
-       
-       bgSlider.addEventListener('input', function() {
-           const value = this.value;
-           bgLeft.style.background = `rgb(${value}, ${value}, ${value})`;
-           bgValue.textContent = value;
-       });
-       
-       squareSlider.addEventListener('input', function() {
-           const value = this.value;
-           const color = `rgb(${value}, ${value}, ${value})`;
-           squareLeft.style.background = color;
-           squareRight.style.background = color;
-           squareValue.textContent = value;
-       });
-       
-       // Faire briller le bouton "Voir +" pour attirer l'attention
-       const style = document.createElement('style');
-       style.textContent = `
+
+        // Event listeners pour les sliders (code existant)
+        const bgSlider = document.getElementById('bg-slider');
+        const squareSlider = document.getElementById('square-slider');
+        const bgValue = document.getElementById('bg-value');
+        const squareValue = document.getElementById('square-value');
+        const bgLeft = document.getElementById('exp-bg-left');
+        const squareLeft = document.getElementById('exp-square-left');
+        const squareRight = document.getElementById('exp-square-right');
+
+        bgSlider.addEventListener('input', function () {
+            const value = this.value;
+            bgLeft.style.background = `rgb(${value}, ${value}, ${value})`;
+            bgValue.textContent = value;
+        });
+
+        squareSlider.addEventListener('input', function () {
+            const value = this.value;
+            const color = `rgb(${value}, ${value}, ${value})`;
+            squareLeft.style.background = color;
+            squareRight.style.background = color;
+            squareValue.textContent = value;
+        });
+
+        // Faire briller le bouton "Voir +" pour attirer l'attention
+        const style = document.createElement('style');
+        style.textContent = `
            @keyframes glow {
                0%, 100% { box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3); }
                50% { box-shadow: 0 4px 25px rgba(255, 107, 107, 0.7); }
@@ -1001,16 +1001,16 @@ function createImprovedContrastComparisonGame(container) {
                animation: glow 2s infinite ease-in-out;
            }
        `;
-       document.head.appendChild(style);
-   }
-   
-   // Commencer par la première question
-   showQuestion(0);
+        document.head.appendChild(style);
+    }
+
+    // Commencer par la première question
+    showQuestion(0);
 }
 
 // AMÉLIORATION 2: Illusion de Luminosité avec dégradé amélioré
 function createImprovedBrightnessIllusionGame(container) {
-   container.innerHTML = `
+    container.innerHTML = `
        <h2 style="text-align: center; margin-bottom: 30px;">${t('exp2GameTitle')}</h2>
        <p style="text-align: center; margin-bottom: 30px; font-size: 18px;">${t('exp2Instruction')}</p>
        
@@ -1090,73 +1090,73 @@ function createImprovedBrightnessIllusionGame(container) {
            </div>
        </div>
    `;
-   
-   // Event listeners
-   const slider = document.getElementById('brightness-slider');
-   const valueDisplay = document.getElementById('brightness-value');
-   const testSquare = document.getElementById('test-square');
-   const solutionBtn = document.getElementById('show-solution-btn');
-   const solutionDiv = document.getElementById('solution-text');
-   const dynamicSolution = document.getElementById('dynamic-solution');
-   
-   function updateSolution() {
-    const currentValue = parseInt(slider.value);
-    
-    if (currentValue === 80) {
-        dynamicSolution.innerHTML = currentLanguage === 'fr' ? 
-            '<strong>Point de référence !</strong> À 80, les deux carrés ont exactement la même couleur réelle. Mais vous paraissent-ils identiques ?' :
-            '<strong>Reference point!</strong> At 80, both squares have exactly the same real color. But do they appear identical to you?';
-    } else if (currentValue < 80) {
-        dynamicSolution.innerHTML = currentLanguage === 'fr' ? 
-            `Vous avez réglé le carré de gauche plus foncé (${currentValue}) que sa valeur réelle (80). Cela montre que le fond noir le faisait paraître plus clair !` :
-            `You've set the left square darker (${currentValue}) than its real value (80). This shows the black background made it appear brighter!`;
-    } else {
-        dynamicSolution.innerHTML = currentLanguage === 'fr' ? 
-            `Vous avez réglé le carré de gauche plus clair (${currentValue}) que sa valeur réelle (80). Cela montre que le fond noir le faisait paraître plus foncé !` :
-            `You've set the left square brighter (${currentValue}) than its real value (80). This shows the black background made it appear darker!`;
-    }
-}
-   
-   slider.addEventListener('input', function() {
-       const value = this.value;
-       testSquare.style.background = `rgb(${value}, ${value}, ${value})`;
-       valueDisplay.textContent = value;
-       
 
-       
-       // Mettre à jour la solution si elle est affichée
-       if (solutionDiv.style.display !== 'none') {
-           updateSolution();
-       }
-   });
-   
-   solutionBtn.addEventListener('click', function() {
-       if (solutionDiv.style.display === 'none') {
-           updateSolution();
-           solutionDiv.style.display = 'block';
-           this.textContent = t('exp2HideSolution');
-           this.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)';
-           
-           if (window.gsap) {
-               gsap.fromTo(solutionDiv, 
-                   { opacity: 0, transform: 'translateY(20px)' },
-                   { opacity: 1, transform: 'translateY(0)', duration: 0.5, ease: "back.out(1.7)" }
-               );
-           }
-       } else {
-           solutionDiv.style.display = 'none';
-           this.textContent = t('exp2ShowSolution');
-           this.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-       }
-   });
+    // Event listeners
+    const slider = document.getElementById('brightness-slider');
+    const valueDisplay = document.getElementById('brightness-value');
+    const testSquare = document.getElementById('test-square');
+    const solutionBtn = document.getElementById('show-solution-btn');
+    const solutionDiv = document.getElementById('solution-text');
+    const dynamicSolution = document.getElementById('dynamic-solution');
+
+    function updateSolution() {
+        const currentValue = parseInt(slider.value);
+
+        if (currentValue === 80) {
+            dynamicSolution.innerHTML = currentLanguage === 'fr' ?
+                '<strong>Point de référence !</strong> À 80, les deux carrés ont exactement la même couleur réelle. Mais vous paraissent-ils identiques ?' :
+                '<strong>Reference point!</strong> At 80, both squares have exactly the same real color. But do they appear identical to you?';
+        } else if (currentValue < 80) {
+            dynamicSolution.innerHTML = currentLanguage === 'fr' ?
+                `Vous avez réglé le carré de gauche plus foncé (${currentValue}) que sa valeur réelle (80). Cela montre que le fond noir le faisait paraître plus clair !` :
+                `You've set the left square darker (${currentValue}) than its real value (80). This shows the black background made it appear brighter!`;
+        } else {
+            dynamicSolution.innerHTML = currentLanguage === 'fr' ?
+                `Vous avez réglé le carré de gauche plus clair (${currentValue}) que sa valeur réelle (80). Cela montre que le fond noir le faisait paraître plus foncé !` :
+                `You've set the left square brighter (${currentValue}) than its real value (80). This shows the black background made it appear darker!`;
+        }
+    }
+
+    slider.addEventListener('input', function () {
+        const value = this.value;
+        testSquare.style.background = `rgb(${value}, ${value}, ${value})`;
+        valueDisplay.textContent = value;
+
+
+
+        // Mettre à jour la solution si elle est affichée
+        if (solutionDiv.style.display !== 'none') {
+            updateSolution();
+        }
+    });
+
+    solutionBtn.addEventListener('click', function () {
+        if (solutionDiv.style.display === 'none') {
+            updateSolution();
+            solutionDiv.style.display = 'block';
+            this.textContent = t('exp2HideSolution');
+            this.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)';
+
+            if (window.gsap) {
+                gsap.fromTo(solutionDiv,
+                    { opacity: 0, transform: 'translateY(20px)' },
+                    { opacity: 1, transform: 'translateY(0)', duration: 0.5, ease: "back.out(1.7)" }
+                );
+            }
+        } else {
+            solutionDiv.style.display = 'none';
+            this.textContent = t('exp2ShowSolution');
+            this.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+        }
+    });
 }
 
 // AMÉLIORATION 3: Adaptation Chromatique physiquement correcte
 function createImprovedWhiteBalanceGame(container) {
-   let adaptationInProgress = false;
-   let currentLighting = 'daylight';
-   
-   container.innerHTML = `
+    let adaptationInProgress = false;
+    let currentLighting = 'daylight';
+
+    container.innerHTML = `
        <h2 style="text-align: center; margin-bottom: 30px;">${t('exp3GameTitle')}</h2>
        <p style="text-align: center; margin-bottom: 20px; font-size: 18px;">${t('exp3Instruction')}</p>
        
@@ -1341,187 +1341,187 @@ function createImprovedWhiteBalanceGame(container) {
            </div>
        </div>
    `;
-   
-   // Propriétés d'éclairage physiquement correctes
-   const lightingSources = {
-       daylight: { 
-           r: 1.0, g: 1.0, b: 1.0, 
-           temp: "6500K", 
-           bg: "rgb(255, 255, 255)",
-           overlay: "rgba(240, 248, 255, 0.1)" 
-       },
-       tungsten: { 
-           r: 1.0, g: 0.6, b: 0.3, 
-           temp: "2700K", 
-           bg: "rgb(255, 220, 180)",
-           overlay: "rgba(255, 200, 100, 0.15)" 
-       },
-       fluorescent: { 
-           r: 0.9, g: 1.0, b: 0.85, 
-           temp: "4000K", 
-           bg: "rgb(240, 255, 245)",
-           overlay: "rgba(150, 255, 150, 0.08)" 
-       }
-   };
-   
-   // Fonction pour calculer la couleur réfléchie physiquement correcte
-   function calculatePhysicalReflection(baseColor, lightColor) {
-       const [r, g, b] = baseColor.split(',').map(Number);
-       return {
-           r: Math.round(r * lightColor.r),
-           g: Math.round(g * lightColor.g),
-           b: Math.round(b * lightColor.b)
-       };
-   }
-   
-   // Fonction pour changer l'éclairage progressivement
-   function changeLighting(lightType, isInstant = false) {
-       if (adaptationInProgress && !isInstant) return;
-       
-       adaptationInProgress = true;
-       currentLighting = lightType;
-       
-       const light = lightingSources[lightType];
-       const scene = document.getElementById('lighting-scene');
-       const objects = container.querySelectorAll('.scene-object');
-       const tempIndicator = document.getElementById('color-temp-indicator');
-       const overlay = document.getElementById('adaptation-overlay');
-       
-       // Durée de transition (instantané ou lent)
-       const duration = isInstant ? '0.5s' : '8s';
-       
-       // Mettre à jour les styles de transition
-       scene.style.transition = `all ${duration} ease`;
-       overlay.style.transition = `all ${duration} ease`;
-       tempIndicator.style.transition = `all ${duration} ease`;
-       
-       objects.forEach(obj => {
-           obj.style.transition = `all ${duration} ease`;
-       });
-       
-       // Appliquer les changements
-       scene.style.background = light.bg;
-       overlay.style.background = light.overlay;
-       tempIndicator.textContent = light.temp;
-       
-       // Calculer et appliquer les couleurs réfléchies pour chaque objet
-       objects.forEach(obj => {
-           const baseColor = obj.dataset.baseColor;
-           const reflectedColor = calculatePhysicalReflection(baseColor, light);
-           obj.style.background = `rgb(${reflectedColor.r}, ${reflectedColor.g}, ${reflectedColor.b})`;
-           
-           // Ajuster la couleur du texte pour la lisibilité
-           const brightness = (reflectedColor.r + reflectedColor.g + reflectedColor.b) / 3;
-           obj.style.color = brightness > 120 ? '#333' : '#fff';
-       });
-       
-       // Mettre à jour les boutons
-       const lightBtns = container.querySelectorAll('.light-btn');
-       lightBtns.forEach(btn => {
-           if (btn.dataset.light === lightType) {
-               btn.style.transform = 'scale(1.1)';
-               btn.style.border = '2px solid #4682B4';
-           } else {
-               btn.style.transform = 'scale(1)';
-               btn.style.border = '2px solid transparent';
-           }
-       });
-       
-       // Réactiver après la transition
-       setTimeout(() => {
-           adaptationInProgress = false;
-       }, isInstant ? 500 : 8000);
-   }
-   
-   // Event listeners pour les boutons d'éclairage
-   const lightBtns = container.querySelectorAll('.light-btn');
-   lightBtns.forEach(btn => {
-       btn.addEventListener('click', function() {
-           if (!adaptationInProgress) {
-               changeLighting(this.dataset.light);
-               
-               // Message temporaire
-               const message = document.createElement('div');
-               message.style.cssText = `
+
+    // Propriétés d'éclairage physiquement correctes
+    const lightingSources = {
+        daylight: {
+            r: 1.0, g: 1.0, b: 1.0,
+            temp: "6500K",
+            bg: "rgb(255, 255, 255)",
+            overlay: "rgba(240, 248, 255, 0.1)"
+        },
+        tungsten: {
+            r: 1.0, g: 0.6, b: 0.3,
+            temp: "2700K",
+            bg: "rgb(255, 220, 180)",
+            overlay: "rgba(255, 200, 100, 0.15)"
+        },
+        fluorescent: {
+            r: 0.9, g: 1.0, b: 0.85,
+            temp: "4000K",
+            bg: "rgb(240, 255, 245)",
+            overlay: "rgba(150, 255, 150, 0.08)"
+        }
+    };
+
+    // Fonction pour calculer la couleur réfléchie physiquement correcte
+    function calculatePhysicalReflection(baseColor, lightColor) {
+        const [r, g, b] = baseColor.split(',').map(Number);
+        return {
+            r: Math.round(r * lightColor.r),
+            g: Math.round(g * lightColor.g),
+            b: Math.round(b * lightColor.b)
+        };
+    }
+
+    // Fonction pour changer l'éclairage progressivement
+    function changeLighting(lightType, isInstant = false) {
+        if (adaptationInProgress && !isInstant) return;
+
+        adaptationInProgress = true;
+        currentLighting = lightType;
+
+        const light = lightingSources[lightType];
+        const scene = document.getElementById('lighting-scene');
+        const objects = container.querySelectorAll('.scene-object');
+        const tempIndicator = document.getElementById('color-temp-indicator');
+        const overlay = document.getElementById('adaptation-overlay');
+
+        // Durée de transition (instantané ou lent)
+        const duration = isInstant ? '0.5s' : '8s';
+
+        // Mettre à jour les styles de transition
+        scene.style.transition = `all ${duration} ease`;
+        overlay.style.transition = `all ${duration} ease`;
+        tempIndicator.style.transition = `all ${duration} ease`;
+
+        objects.forEach(obj => {
+            obj.style.transition = `all ${duration} ease`;
+        });
+
+        // Appliquer les changements
+        scene.style.background = light.bg;
+        overlay.style.background = light.overlay;
+        tempIndicator.textContent = light.temp;
+
+        // Calculer et appliquer les couleurs réfléchies pour chaque objet
+        objects.forEach(obj => {
+            const baseColor = obj.dataset.baseColor;
+            const reflectedColor = calculatePhysicalReflection(baseColor, light);
+            obj.style.background = `rgb(${reflectedColor.r}, ${reflectedColor.g}, ${reflectedColor.b})`;
+
+            // Ajuster la couleur du texte pour la lisibilité
+            const brightness = (reflectedColor.r + reflectedColor.g + reflectedColor.b) / 3;
+            obj.style.color = brightness > 120 ? '#333' : '#fff';
+        });
+
+        // Mettre à jour les boutons
+        const lightBtns = container.querySelectorAll('.light-btn');
+        lightBtns.forEach(btn => {
+            if (btn.dataset.light === lightType) {
+                btn.style.transform = 'scale(1.1)';
+                btn.style.border = '2px solid #4682B4';
+            } else {
+                btn.style.transform = 'scale(1)';
+                btn.style.border = '2px solid transparent';
+            }
+        });
+
+        // Réactiver après la transition
+        setTimeout(() => {
+            adaptationInProgress = false;
+        }, isInstant ? 500 : 8000);
+    }
+
+    // Event listeners pour les boutons d'éclairage
+    const lightBtns = container.querySelectorAll('.light-btn');
+    lightBtns.forEach(btn => {
+        btn.addEventListener('click', function () {
+            if (!adaptationInProgress) {
+                changeLighting(this.dataset.light);
+
+                // Message temporaire
+                const message = document.createElement('div');
+                message.style.cssText = `
                    position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
                    background: rgba(0, 0, 0, 0.8); color: white; padding: 15px 25px;
                    border-radius: 25px; font-size: 16px; z-index: 1000;
                    border: 2px solid #FFD700;
                `;
-               message.textContent = t('transitionInProgress', { light: this.textContent });
-               document.body.appendChild(message);
-               
-               setTimeout(() => message.remove(), 8500);
-           }
-       });
-   });
-   
-   // Démonstration d'adaptation automatique
-   document.getElementById('demo-adaptation').addEventListener('click', function() {
-       if (adaptationInProgress) return;
-       
-       this.disabled = true;
-       this.textContent = t('adaptationDemo');
-       
-       const sequence = [
-           { light: 'tungsten', message: currentLanguage === 'fr' ? 'Passage à l\'éclairage tungstène...' : 'Switching to tungsten lighting...', delay: 0 },
-           { light: 'tungsten', message: currentLanguage === 'fr' ? 'Votre œil s\'adapte progressivement...' : 'Your eye is gradually adapting...', delay: 8000 },
-           { light: 'daylight', message: currentLanguage === 'fr' ? 'Retour brutal à la lumière du jour !' : 'Brutal return to daylight!', delay: 12000 },
-           { light: 'daylight', message: currentLanguage === 'fr' ? 'Remarquez la différence perçue !' : 'Notice the perceived difference!', delay: 13000 }
-       ];
-       
-       sequence.forEach((step, index) => {
-           setTimeout(() => {
-               if (step.light !== currentLighting) {
-                   changeLighting(step.light, index === 2); // Changement brutal pour le retour
-               }
-               
-               // Afficher le message
-               const messageDiv = document.createElement('div');
-               messageDiv.style.cssText = `
+                message.textContent = t('transitionInProgress', { light: this.textContent });
+                document.body.appendChild(message);
+
+                setTimeout(() => message.remove(), 8500);
+            }
+        });
+    });
+
+    // Démonstration d'adaptation automatique
+    document.getElementById('demo-adaptation').addEventListener('click', function () {
+        if (adaptationInProgress) return;
+
+        this.disabled = true;
+        this.textContent = t('adaptationDemo');
+
+        const sequence = [
+            { light: 'tungsten', message: currentLanguage === 'fr' ? 'Passage à l\'éclairage tungstène...' : 'Switching to tungsten lighting...', delay: 0 },
+            { light: 'tungsten', message: currentLanguage === 'fr' ? 'Votre œil s\'adapte progressivement...' : 'Your eye is gradually adapting...', delay: 8000 },
+            { light: 'daylight', message: currentLanguage === 'fr' ? 'Retour brutal à la lumière du jour !' : 'Brutal return to daylight!', delay: 12000 },
+            { light: 'daylight', message: currentLanguage === 'fr' ? 'Remarquez la différence perçue !' : 'Notice the perceived difference!', delay: 13000 }
+        ];
+
+        sequence.forEach((step, index) => {
+            setTimeout(() => {
+                if (step.light !== currentLighting) {
+                    changeLighting(step.light, index === 2); // Changement brutal pour le retour
+                }
+
+                // Afficher le message
+                const messageDiv = document.createElement('div');
+                messageDiv.style.cssText = `
                    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
                    background: rgba(0, 0, 0, 0.9); color: white; padding: 20px 30px;
                    border-radius: 15px; font-size: 18px; z-index: 1001;
                    border: 2px solid #66D9EF; text-align: center;
                `;
-               messageDiv.textContent = step.message;
-               document.body.appendChild(messageDiv);
-               
-               setTimeout(() => messageDiv.remove(), index === sequence.length - 1 ? 3000 : 2000);
-           }, step.delay);
-       });
-       
-       // Réactiver le bouton
-       setTimeout(() => {
-           this.disabled = false;
-           this.textContent = t('exp3DemoAdaptation');
-       }, 18000);
-   });
-   
-   // Changement brutal pour comparaison
-   document.getElementById('compare-lighting').addEventListener('click', function() {
-       if (adaptationInProgress) return;
-       
-       const otherLights = Object.keys(lightingSources).filter(l => l !== currentLighting);
-       const randomLight = otherLights[Math.floor(Math.random() * otherLights.length)];
-       
-       changeLighting(randomLight, true); // Changement instantané
-       
-       const message = document.createElement('div');
-       message.style.cssText = `
+                messageDiv.textContent = step.message;
+                document.body.appendChild(messageDiv);
+
+                setTimeout(() => messageDiv.remove(), index === sequence.length - 1 ? 3000 : 2000);
+            }, step.delay);
+        });
+
+        // Réactiver le bouton
+        setTimeout(() => {
+            this.disabled = false;
+            this.textContent = t('exp3DemoAdaptation');
+        }, 18000);
+    });
+
+    // Changement brutal pour comparaison
+    document.getElementById('compare-lighting').addEventListener('click', function () {
+        if (adaptationInProgress) return;
+
+        const otherLights = Object.keys(lightingSources).filter(l => l !== currentLighting);
+        const randomLight = otherLights[Math.floor(Math.random() * otherLights.length)];
+
+        changeLighting(randomLight, true); // Changement instantané
+
+        const message = document.createElement('div');
+        message.style.cssText = `
            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
            background: rgba(255, 107, 107, 0.9); color: white; padding: 15px 25px;
            border-radius: 25px; font-size: 16px; z-index: 1000;
            border: 2px solid white;
        `;
-       message.textContent = t('brutalChange', { temp: lightingSources[randomLight].temp });
-       document.body.appendChild(message);
-       
-       setTimeout(() => message.remove(), 3000);
-   });
-   
-   // Initialiser avec la lumière du jour
-   changeLighting('daylight', true);
+        message.textContent = t('brutalChange', { temp: lightingSources[randomLight].temp });
+        document.body.appendChild(message);
+
+        setTimeout(() => message.remove(), 3000);
+    });
+
+    // Initialiser avec la lumière du jour
+    changeLighting('daylight', true);
 }
 
 // EXPÉRIENCE 4 CORRIGÉE : Effet de Contexte avec gestion améliorée du glisser-déposer
@@ -1624,12 +1624,12 @@ function createImprovedContextEffectGame(container) {
             </div>
         </div>
     `;
-    
+
     // Initialisation des variables
     let userRanking = [null, null, null]; // Utilisons un tableau avec les emplacements déjà définis
     let draggedElement = null;
     let draggedCircleId = null;
-    
+
     // Rendre les cercles déplaçables avec des positions initiales
     const circles = container.querySelectorAll('.test-circle');
     circles.forEach((circle, index) => {
@@ -1638,10 +1638,10 @@ function createImprovedContextEffectGame(container) {
         circle.dataset.circleId = index;
         circle.style.position = 'relative';
         circle.style.cursor = 'grab';
-        
+
         // Ajouter les attributs pour le glisser-déposer
         circle.setAttribute('draggable', 'true');
-        
+
         // Événements de glisser-déposer
         circle.addEventListener('dragstart', (e) => {
             draggedElement = circle;
@@ -1652,40 +1652,40 @@ function createImprovedContextEffectGame(container) {
                 circle.style.display = 'none';
             }, 0);
         });
-        
+
         circle.addEventListener('dragend', (e) => {
             circle.style.opacity = '1';
             circle.style.display = 'block';
             draggedElement = null;
         });
     });
-    
+
     // Gestion des zones de dépôt avec détection améliorée
     const rankSlots = container.querySelectorAll('.rank-slot');
     rankSlots.forEach(slot => {
         // État initial
         slot.dataset.filled = 'false';
-        
+
         // Événements de glisser-déposer
         slot.addEventListener('dragover', (e) => {
             e.preventDefault();
             slot.style.background = 'rgba(255, 215, 0, 0.2)';
             slot.style.borderStyle = 'solid';
         });
-        
+
         slot.addEventListener('dragleave', () => {
             slot.style.background = 'transparent';
             slot.style.borderStyle = 'dashed';
         });
-        
+
         slot.addEventListener('drop', (e) => {
             e.preventDefault();
             slot.style.background = 'transparent';
             slot.style.borderStyle = 'dashed';
-            
+
             const circleId = parseInt(e.dataTransfer.getData('text/plain'));
             const rank = parseInt(slot.dataset.rank);
-            
+
             // Si le slot est déjà occupé par un autre cercle, libérer ce cercle
             if (slot.dataset.filled === 'true' && slot.dataset.circleId !== String(circleId)) {
                 const oldCircleId = parseInt(slot.dataset.circleId);
@@ -1696,13 +1696,13 @@ function createImprovedContextEffectGame(container) {
                     if (oldRankIndex !== -1) {
                         userRanking[oldRankIndex] = null;
                     }
-                    
+
                     // Remettre le cercle à sa position d'origine
                     const originalContext = document.querySelector(`.context-bg:nth-child(${oldCircleId + 1})`);
                     originalContext.appendChild(oldCircle);
                 }
             }
-            
+
             // Si le cercle était déjà dans un autre slot, le retirer
             const oldRankIndex = userRanking.indexOf(circleId);
             if (oldRankIndex !== -1) {
@@ -1715,7 +1715,7 @@ function createImprovedContextEffectGame(container) {
                 }
                 userRanking[oldRankIndex] = null;
             }
-            
+
             // Placer le cercle dans le nouveau slot
             const circle = document.getElementById(`circle-${circleId}`);
             if (circle) {
@@ -1725,27 +1725,27 @@ function createImprovedContextEffectGame(container) {
                 clone.style.height = '60px';
                 clone.style.cursor = 'default';
                 clone.removeAttribute('draggable');
-                
+
                 // Vider le slot et ajouter le clone
                 slot.innerHTML = '';
                 slot.appendChild(clone);
                 slot.dataset.filled = 'true';
                 slot.dataset.circleId = circleId;
-                
+
                 // Mettre à jour le classement
                 userRanking[rank - 1] = circleId;
-                
+
                 // Vérifier si tous les slots sont remplis
                 checkRankingComplete();
             }
         });
     });
-    
+
     // Fonction pour vérifier si le classement est complet
     function checkRankingComplete() {
         const isComplete = userRanking.every(item => item !== null);
         const checkBtn = document.getElementById('check-ranking');
-        
+
         if (isComplete) {
             checkBtn.style.opacity = '1';
             checkBtn.style.pointerEvents = 'auto';
@@ -1759,12 +1759,12 @@ function createImprovedContextEffectGame(container) {
             checkBtn.textContent = t('exp4ValidateProgress', { current: userRanking.filter(Boolean).length });
         }
     }
-    
+
     // Bouton de vérification du classement
-    document.getElementById('check-ranking').addEventListener('click', function() {
+    document.getElementById('check-ranking').addEventListener('click', function () {
         const explanationDiv = document.getElementById('context-explanation');
         explanationDiv.style.display = 'block';
-        
+
         // Afficher le classement de l'utilisateur
         const userRankingDisplay = document.getElementById('user-ranking-display');
         userRankingDisplay.innerHTML = `
@@ -1774,28 +1774,28 @@ function createImprovedContextEffectGame(container) {
             ${rankingLabelFromIndex(userRanking[2])}<br>
             <span style="color: #FFD700; font-size: 14px;">${t('exp4RankingNote')}</span>
         `;
-        
+
         this.style.display = 'none';
-        
+
         if (window.gsap) {
-            gsap.fromTo(explanationDiv, 
+            gsap.fromTo(explanationDiv,
                 { opacity: 0, transform: 'translateY(20px)' },
                 { opacity: 1, transform: 'translateY(0)', duration: 0.5, ease: "back.out(1.7)" }
             );
         }
     });
-    
+
     // Fonction pour obtenir l'étiquette d'un cercle
     function rankingLabelFromIndex(index) {
         const labels = ['A', 'B', 'C'];
         return `${t('exp4CircleA').replace('A', labels[index])}`;
     }
-    
+
     // Bouton d'isolation
     let isolationState = false;
-    document.getElementById('isolation-btn').addEventListener('click', function() {
+    document.getElementById('isolation-btn').addEventListener('click', function () {
         const backgrounds = container.querySelectorAll('.context-bg');
-        
+
         if (!isolationState) {
             // Isoler : mettre tous les fonds en gris neutre
             backgrounds.forEach(bg => {
@@ -1803,10 +1803,10 @@ function createImprovedContextEffectGame(container) {
             });
             this.textContent = t('exp4RestoreContexts');
             this.style.background = 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)';
-            
+
             // Afficher un message
             showTemporaryMessage(t('backgroundsNeutralized'), 3000);
-            
+
             isolationState = true;
         } else {
             // Remettre les contextes colorés
@@ -1818,19 +1818,19 @@ function createImprovedContextEffectGame(container) {
             });
             this.textContent = t('exp4IsolateCircles');
             this.style.background = 'linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%)';
-            
+
             // Afficher un message
             showTemporaryMessage(t('contextsRestored'), 3000);
-            
+
             isolationState = false;
         }
     });
-    
+
     // Bouton de révélation de la vérité
-    document.getElementById('reveal-btn').addEventListener('click', function() {
+    document.getElementById('reveal-btn').addEventListener('click', function () {
         const explanationDiv = document.getElementById('context-explanation');
         explanationDiv.style.display = 'block';
-        
+
         // Si l'utilisateur n'a pas encore classé les cercles
         if (!userRanking.every(item => item !== null)) {
             const userRankingDisplay = document.getElementById('user-ranking-display');
@@ -1838,14 +1838,14 @@ function createImprovedContextEffectGame(container) {
                 <span style="color: #FFD700; font-size: 16px;">${t('exp4RankingNote')}</span>
             `;
         }
-        
+
         if (window.gsap) {
-            gsap.fromTo(explanationDiv, 
+            gsap.fromTo(explanationDiv,
                 { opacity: 0, transform: 'translateY(20px)' },
                 { opacity: 1, transform: 'translateY(0)', duration: 0.5, ease: "back.out(1.7)" }
             );
         }
-        
+
         // Animation de révélation
         const circles = container.querySelectorAll('.test-circle');
         circles.forEach(circle => {
@@ -1861,7 +1861,7 @@ function createImprovedContextEffectGame(container) {
             }
         });
     });
-    
+
     // Fonction pour afficher un message temporaire
     function showTemporaryMessage(message, duration = 3000) {
         const messageDiv = document.createElement('div');
@@ -1883,11 +1883,11 @@ function createImprovedContextEffectGame(container) {
         `;
         messageDiv.innerHTML = message;
         document.body.appendChild(messageDiv);
-        
+
         setTimeout(() => {
             messageDiv.style.opacity = '1';
         }, 10);
-        
+
         setTimeout(() => {
             messageDiv.style.opacity = '0';
             setTimeout(() => {
@@ -1895,7 +1895,7 @@ function createImprovedContextEffectGame(container) {
             }, 300);
         }, duration);
     }
-    
+
     // Ajouter une classe d'animation pour le bouton de validation
     const style = document.createElement('style');
     style.textContent = `
@@ -1914,80 +1914,80 @@ function createImprovedContextEffectGame(container) {
 
 // Navigation entre checkpoints
 function navigateToCheckpoint(targetCheckpoint, animate = true) {
-if (isTransitioning || targetCheckpoint < 0 || targetCheckpoint >= totalCheckpoints) {
-    return;
-}
+    if (isTransitioning || targetCheckpoint < 0 || targetCheckpoint >= totalCheckpoints) {
+        return;
+    }
 
-currentCheckpoint = targetCheckpoint;
-const checkpoint = checkpoints[targetCheckpoint];
+    currentCheckpoint = targetCheckpoint;
+    const checkpoint = checkpoints[targetCheckpoint];
 
-if (animate && window.gsap) {
-    isTransitioning = true;
-    gsap.to(tunnelMaterial.uniforms.cameraProgress, {
-        duration: 3,
-        value: checkpoint.position,
-        ease: "power2.inOut",
-        onComplete: () => {
-            isTransitioning = false;
-            setTimeout(() => {
-                showDetailedExplanation(checkpoint);
-            }, 500);
-        }
-    });
-} else {
-    tunnelMaterial.uniforms.cameraProgress.value = checkpoint.position;
-    setTimeout(() => {
-        showDetailedExplanation(checkpoint);
-    }, 100);
-}
+    if (animate && window.gsap) {
+        isTransitioning = true;
+        gsap.to(tunnelMaterial.uniforms.cameraProgress, {
+            duration: 3,
+            value: checkpoint.position,
+            ease: "power2.inOut",
+            onComplete: () => {
+                isTransitioning = false;
+                setTimeout(() => {
+                    showDetailedExplanation(checkpoint);
+                }, 500);
+            }
+        });
+    } else {
+        tunnelMaterial.uniforms.cameraProgress.value = checkpoint.position;
+        setTimeout(() => {
+            showDetailedExplanation(checkpoint);
+        }, 100);
+    }
 
-updateUI();
+    updateUI();
 }
 
 // Mettre à jour l'interface utilisateur
 function updateUI() {
-progressDots.forEach((dot, index) => {
-    if (index < totalCheckpoints) {
-        dot.classList.toggle('active', index === currentCheckpoint);
-        dot.style.display = 'block';
-    } else {
-        dot.style.display = 'none';
-    }
-});
+    progressDots.forEach((dot, index) => {
+        if (index < totalCheckpoints) {
+            dot.classList.toggle('active', index === currentCheckpoint);
+            dot.style.display = 'block';
+        } else {
+            dot.style.display = 'none';
+        }
+    });
 
-prevBtn.disabled = currentCheckpoint === 0;
-nextBtn.disabled = currentCheckpoint === totalCheckpoints - 1;
+    prevBtn.disabled = currentCheckpoint === 0;
+    nextBtn.disabled = currentCheckpoint === totalCheckpoints - 1;
 
-const checkpoint = checkpoints[currentCheckpoint];
-checkpointTitle.textContent = t(checkpoint.titleKey);
-checkpointDescription.textContent = t(checkpoint.descKey);
-startGameBtn.textContent = t('startGame');
+    const checkpoint = checkpoints[currentCheckpoint];
+    checkpointTitle.textContent = t(checkpoint.titleKey);
+    checkpointDescription.textContent = t(checkpoint.descKey);
+    startGameBtn.textContent = t('startGame');
 }
 
 // Afficher le panneau d'information
 function showInfoPanel() {
-infoPanel.classList.add('visible');
-setTimeout(() => {
-    infoPanel.classList.remove('visible');
-}, 120000);
+    infoPanel.classList.add('visible');
+    setTimeout(() => {
+        infoPanel.classList.remove('visible');
+    }, 120000);
 }
 
 // Event listeners
 prevBtn.addEventListener('click', () => {
-if (!isTransitioning && currentCheckpoint > 0) {
-    navigateToCheckpoint(currentCheckpoint - 1);
-}
+    if (!isTransitioning && currentCheckpoint > 0) {
+        navigateToCheckpoint(currentCheckpoint - 1);
+    }
 });
 
 nextBtn.addEventListener('click', () => {
-if (!isTransitioning && currentCheckpoint < totalCheckpoints - 1) {
-    navigateToCheckpoint(currentCheckpoint + 1);
-}
+    if (!isTransitioning && currentCheckpoint < totalCheckpoints - 1) {
+        navigateToCheckpoint(currentCheckpoint + 1);
+    }
 });
 
 exitBtn.addEventListener('click', () => {
-const overlay = document.createElement('div');
-overlay.style.cssText = `
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `
     position: fixed;
     top: 0;
     left: 0;
@@ -2004,127 +2004,127 @@ overlay.style.cssText = `
     font-size: 24px;
     font-family: "Segoe UI", Helvetica, Arial, sans-serif;
 `;
-overlay.innerHTML = t('returningToMenu');
-document.body.appendChild(overlay);
+    overlay.innerHTML = t('returningToMenu');
+    document.body.appendChild(overlay);
 
-setTimeout(() => {
-    overlay.style.opacity = '1';
     setTimeout(() => {
-        window.location.href = 'index.html';
-    }, 1000);
-}, 100);
+        overlay.style.opacity = '1';
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 1000);
+    }, 100);
 });
 
 progressDots.forEach((dot, index) => {
-dot.addEventListener('click', () => {
-    if (!isTransitioning && index < totalCheckpoints) {
-        navigateToCheckpoint(index);
-    }
-});
+    dot.addEventListener('click', () => {
+        if (!isTransitioning && index < totalCheckpoints) {
+            navigateToCheckpoint(index);
+        }
+    });
 });
 
 startGameBtn.addEventListener('click', () => {
-const checkpoint = checkpoints[currentCheckpoint];
-showDetailedExplanation(checkpoint);
-infoPanel.classList.remove('visible');
+    const checkpoint = checkpoints[currentCheckpoint];
+    showDetailedExplanation(checkpoint);
+    infoPanel.classList.remove('visible');
 });
 
 // Navigation au clavier améliorée
 document.addEventListener('keydown', (event) => {
-if (isTransitioning) return;
+    if (isTransitioning) return;
 
-// Fermer les modales avec Échap
-if (event.key === 'Escape') {
-    const explanationModal = document.getElementById('explanation-modal');
-    const miniGameContainer = document.getElementById('mini-game-container');
-    
-    if (explanationModal && explanationModal.style.display === 'flex') {
-        explanationModal.style.display = 'none';
+    // Fermer les modales avec Échap
+    if (event.key === 'Escape') {
+        const explanationModal = document.getElementById('explanation-modal');
+        const miniGameContainer = document.getElementById('mini-game-container');
+
+        if (explanationModal && explanationModal.style.display === 'flex') {
+            explanationModal.style.display = 'none';
+            return;
+        }
+
+        if (miniGameContainer && miniGameContainer.style.display === 'flex') {
+            miniGameContainer.style.display = 'none';
+            currentMiniGame = null;
+            return;
+        }
+
+        exitBtn.click();
         return;
     }
-    
-    if (miniGameContainer && miniGameContainer.style.display === 'flex') {
-        miniGameContainer.style.display = 'none';
-        currentMiniGame = null;
-        return;
-    }
-    
-    exitBtn.click();
-    return;
-}
 
-switch(event.key) {
-    case 'ArrowLeft':
-        if (currentCheckpoint > 0) {
-            navigateToCheckpoint(currentCheckpoint - 1);
-        }
-        break;
-    case 'ArrowRight':
-        if (currentCheckpoint < totalCheckpoints - 1) {
-            navigateToCheckpoint(currentCheckpoint + 1);
-        }
-        break;
-    case ' ':
-        event.preventDefault();
-        const checkpoint = checkpoints[currentCheckpoint];
-        showDetailedExplanation(checkpoint);
-        break;
-    case 'Enter':
-        if (currentMiniGame) {
-            console.log('Action dans le mini-jeu:', currentMiniGame);
-        }
-        break;
-}
+    switch (event.key) {
+        case 'ArrowLeft':
+            if (currentCheckpoint > 0) {
+                navigateToCheckpoint(currentCheckpoint - 1);
+            }
+            break;
+        case 'ArrowRight':
+            if (currentCheckpoint < totalCheckpoints - 1) {
+                navigateToCheckpoint(currentCheckpoint + 1);
+            }
+            break;
+        case ' ':
+            event.preventDefault();
+            const checkpoint = checkpoints[currentCheckpoint];
+            showDetailedExplanation(checkpoint);
+            break;
+        case 'Enter':
+            if (currentMiniGame) {
+                console.log('Action dans le mini-jeu:', currentMiniGame);
+            }
+            break;
+    }
 });
 
 // Gestion du redimensionnement
 function handleResize() {
-camera.aspect = window.innerWidth / window.innerHeight;
-camera.updateProjectionMatrix();
-renderer.setSize(window.innerWidth, window.innerHeight);
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
 
-tunnelMaterial.uniforms.iResolution.value.set(
-    window.innerWidth, 
-    window.innerHeight
-);
+    tunnelMaterial.uniforms.iResolution.value.set(
+        window.innerWidth,
+        window.innerHeight
+    );
 }
 
 window.addEventListener('resize', handleResize);
 
 // Animation principale
 function animate() {
-requestAnimationFrame(animate);
-tunnelMaterial.uniforms.iTime.value += 0.016;
-renderer.render(scene, camera);
+    requestAnimationFrame(animate);
+    tunnelMaterial.uniforms.iTime.value += 0.016;
+    renderer.render(scene, camera);
 }
 
 // Initialisation
 function init() {
-console.log('🎨 Galerie Interactive - Perception des Couleurs (Version Multilingue)');
-console.log('📍 Navigation: Flèches ← → ou clic sur les points');
-console.log('🎮 Interactions: Espace pour les explications, Échap pour sortir');
-console.log('🌐 Langues: Français/English disponibles');
-console.log('🔬 Mini-jeux: Expériences interactives scientifiquement correctes');
+    console.log('🎨 Galerie Interactive - Perception des Couleurs (Version Multilingue)');
+    console.log('📍 Navigation: Flèches ← → ou clic sur les points');
+    console.log('🎮 Interactions: Espace pour les explications, Échap pour sortir');
+    console.log('🌐 Langues: Français/English disponibles');
+    console.log('🔬 Mini-jeux: Expériences interactives scientifiquement correctes');
 
-// Charger la langue sauvegardée
-const savedLang = localStorage.getItem('colorPerceptionLang');
-if (savedLang && translations[savedLang]) {
-    currentLanguage = savedLang;
-    document.getElementById('language-select').value = savedLang;
-}
+    // Charger la langue sauvegardée
+    const savedLang = localStorage.getItem('colorPerceptionLang');
+    if (savedLang && translations[savedLang]) {
+        currentLanguage = savedLang;
+        document.getElementById('language-select').value = savedLang;
+    }
 
-updateUI();
-updateUILanguage();
+    updateUI();
+    updateUILanguage();
 
-setTimeout(() => {
-    showInfoPanel();
-}, 1500);
+    setTimeout(() => {
+        showInfoPanel();
+    }, 1500);
 
-animate();
+    animate();
 }
 
 if (document.readyState === 'loading') {
-document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', init);
 } else {
-init();
+    init();
 }

@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Perception - Synthèse Soustractive</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #000011;
+            color: white;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        #ui-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        #header {
+            text-align: center;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.8em;
+            color: #66D9EF;
+            font-weight: 600;
+        }
+
+        p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+            font-size: 1em;
+            line-height: 1.4;
+        }
+
+        #controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(15px);
+            padding: 20px;
+            text-align: center;
+            pointer-events: all;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.5s ease;
+            transform: translateY(100%);
+            opacity: 0;
+            display: none;
+        }
+        
+        #controls.visible {
+            transform: translateY(0);
+            opacity: 1;
+            display: block;
+        }
+
+        #start-btn {
+            background: linear-gradient(135deg, rgba(50, 50, 80, 0.8), rgba(80, 50, 100, 0.8));
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            padding: 12px 25px;
+            font-size: 16px;
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        #start-btn:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            background: linear-gradient(135deg, rgba(60, 60, 100, 0.9), rgba(100, 60, 130, 0.9));
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        #start-btn:disabled {
+            background: linear-gradient(45deg, #444, #666);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        #choices {
+            display: none;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .choice {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .choice:hover {
+            transform: scale(1.1) translateY(-3px);
+            border-color: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .choice::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0));
+            pointer-events: none;
+        }
+
+        #message {
+            margin-top: 15px;
+            font-size: 1.1em;
+            font-weight: bold;
+            height: 25px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        #score {
+            margin-top: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #66D9EF;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .pulsing {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        #instructions {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.7);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 450px;
+            pointer-events: all;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        #instructions h3 {
+            margin-top: 0;
+            color: #66D9EF;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        
+        #instructions p {
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+        
+        #instructions button {
+            background: linear-gradient(135deg, rgba(50, 50, 80, 0.8), rgba(80, 50, 100, 0.8));
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        #instructions button:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, rgba(60, 60, 100, 0.9), rgba(100, 60, 130, 0.9));
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .hidden {
+            display: none;
+        }
+        
+        .exit-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            pointer-events: all;
+        }
+
+        .exit-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        #language-menu {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 150;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
+            padding: 8px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            pointer-events: all;
+        }
+
+        #language-menu:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        #language-select {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            outline: none;
+        }
+
+        #language-select option {
+            background: #333;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container"></div>
+    
+    <div id="ui-container">
+        <!-- Bouton de sortie -->
+        <button class="exit-button" id="exit-btn" title="Retour à la galerie">✕</button>
+
+        <div id="instructions">
+            <h3 id="instructions-title">Instructions</h3>
+            <p id="instructions-text">Un cube coloré va traverser un filtre transparent. Après le passage, devinez quelle était la couleur originale du cube avant la synthèse soustractive.</p>
+            <button id="instructions-button" onclick="hideInstructions()">Commencer</button>
+        </div>
+
+        <div id="controls">
+            <button id="start-btn">Lancer l'Animation</button>
+            
+            <div id="choices">
+                <div class="choice" id="choiceA"></div>
+                <div class="choice" id="choiceB"></div>
+                <div class="choice" id="choiceC"></div>
+            </div>
+            
+            <div id="message"></div>
+            <div id="score">Score: 0 / 0</div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Système de traduction pour le test de perception
+        const translations = {
+            fr: {
+                pageTitle: "Test de Perception - Synthèse Soustractive",
+                instructionsTitle: "Instructions",
+                instructionsText: "Un cube coloré va traverser un filtre transparent. Après le passage, devinez quelle était la couleur originale du cube avant la synthèse soustractive.",
+                startButton: "Commencer",
+                launchAnimation: "Lancer l'Animation",
+                score: "Score",
+                excellent: "Excellent ! Bonne réponse !",
+                incorrect: "Incorrect ! La couleur originale était",
+                quizCompleted: "Quiz terminé ! Score final:",
+                returnToGallery: "Retour à la galerie",
+                colors: {
+                    'red': 'rouge', 'blue': 'bleu', 'green': 'vert', 'yellow': 'jaune',
+                    'cyan': 'cyan', 'magenta': 'magenta', 'purple': 'violet', 'orange': 'orange',
+                    'lime': 'lime', 'brown': 'marron', 'indigo': 'indigo', 'black': 'noir',
+                    'darkred': 'rouge foncé', 'darkgreen': 'vert foncé', 'darkblue': 'bleu foncé'
+                },
+                exitTitle: "Retour à la galerie",
+                returningToGallery: "Retour à la galerie..."
+            },
+            en: {
+                pageTitle: "Perception Test - Subtractive Synthesis",
+                instructionsTitle: "Instructions",
+                instructionsText: "A colored cube will pass through a transparent filter. After passing through, guess what was the original color of the cube before subtractive synthesis.",
+                startButton: "Start",
+                launchAnimation: "Launch Animation",
+                score: "Score",
+                excellent: "Excellent! Correct answer!",
+                incorrect: "Incorrect! The original color was",
+                quizCompleted: "Quiz completed! Final score:",
+                returnToGallery: "Return to gallery",
+                colors: {
+                    'red': 'red', 'blue': 'blue', 'green': 'green', 'yellow': 'yellow',
+                    'cyan': 'cyan', 'magenta': 'magenta', 'purple': 'purple', 'orange': 'orange',
+                    'lime': 'lime', 'brown': 'brown', 'indigo': 'indigo', 'black': 'black',
+                    'darkred': 'dark red', 'darkgreen': 'dark green', 'darkblue': 'dark blue'
+                },
+                exitTitle: "Return to gallery",
+                returningToGallery: "Returning to gallery..."
+            }
+        };
+
+        // Variables globales
+        let currentLanguage = 'fr';
+
+        // Fonction pour obtenir une traduction
+        function t(key, params = {}) {
+            const keys = key.split('.');
+            let text = translations[currentLanguage];
+            
+            for (let k of keys) {
+                text = text?.[k];
+            }
+            
+            if (!text) {
+                text = translations['fr'];
+                for (let k of keys) {
+                    text = text?.[k];
+                }
+            }
+            
+            if (!text) return key;
+            
+            Object.keys(params).forEach(param => {
+                text = text.replace(`{${param}}`, params[param]);
+            });
+            
+            return text;
+        }
+
+        // Fonction pour changer la langue
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            localStorage.setItem('colorPerceptionLang', lang);
+            updateUILanguage();
+        }
+
+        // Fonction pour mettre à jour l'interface avec la nouvelle langue
+        function updateUILanguage() {
+            document.title = t('pageTitle');
+            
+            const instructionsTitle = document.getElementById('instructions-title');
+            const instructionsText = document.getElementById('instructions-text');
+            const instructionsButton = document.getElementById('instructions-button');
+            const startBtn = document.getElementById('start-btn');
+            const exitBtn = document.getElementById('exit-btn');
+            
+            if (instructionsTitle) instructionsTitle.textContent = t('instructionsTitle');
+            if (instructionsText) instructionsText.textContent = t('instructionsText');
+            if (instructionsButton) instructionsButton.textContent = t('startButton');
+            if (startBtn) startBtn.textContent = t('launchAnimation');
+            if (exitBtn) exitBtn.title = t('exitTitle');
+            
+            updateScoreDisplay();
+        }
+
+        // Fonction pour mettre à jour l'affichage du score
+        function updateScoreDisplay() {
+            const scoreElement = document.getElementById('score');
+            if (scoreElement && typeof score !== 'undefined' && typeof currentQuestion !== 'undefined') {
+                scoreElement.textContent = `${t('score')}: ${score} / ${currentQuestion}`;
+            }
+        }
+
+        // Créer le menu de sélection de langue
+        function createLanguageMenu() {
+            const languageMenu = document.createElement('div');
+            languageMenu.id = 'language-menu';
+
+            languageMenu.innerHTML = `
+                <span style="color: white; font-size: 12px; font-weight: 600;">🌐</span>
+                <select id="language-select">
+                    <option value="fr">FR</option>
+                    <option value="en">EN</option>
+                </select>
+            `;
+
+            document.body.appendChild(languageMenu);
+
+            document.getElementById('language-select').addEventListener('change', (e) => {
+                changeLanguage(e.target.value);
+            });
+
+            return languageMenu;
+        }
+
+        // INITIALISATION AU CHARGEMENT DE LA PAGE
+        function initializeLanguage() {
+            // Charger la langue sauvegardée
+            const savedLang = localStorage.getItem('colorPerceptionLang');
+            if (savedLang && translations[savedLang]) {
+                currentLanguage = savedLang;
+            }
+            
+            // Créer le menu de langue
+            createLanguageMenu();
+            
+            // Mettre à jour la sélection
+            const languageSelect = document.getElementById('language-select');
+            if (languageSelect) {
+                languageSelect.value = currentLanguage;
+            }
+            
+            // IMPORTANT: Appliquer la traduction immédiatement
+            updateUILanguage();
+        }
+
+        // Configuration du jeu
+        const colors = [
+            'red', 'blue', 'green', 'yellow', 'cyan', 'magenta',
+            'purple', 'orange', 'lime', 'brown', 'indigo', 'black'
+        ];
+
+        const colorHexMap = {
+            'red': 0xFF0000, 'blue': 0x0000FF, 'green': 0x008000, 'yellow': 0xFFFF00,
+            'cyan': 0x00FFFF, 'magenta': 0xFF00FF, 'purple': 0x800080, 'orange': 0xFFA500,
+            'lime': 0x00FF00, 'brown': 0xA52A2A, 'indigo': 0x4B0082, 'black': 0x000000,
+            'darkred': 0x3F0000, 'darkgreen': 0x003F00, 'darkblue': 0x00003F
+        };
+
+        const questions = [
+            { cube: 'cyan', filter: 'yellow' },
+            { cube: 'magenta', filter: 'yellow' },
+            { cube: 'cyan', filter: 'magenta' },
+            { cube: 'red', filter: 'cyan' },
+            { cube: 'green', filter: 'magenta' },
+            { cube: 'blue', filter: 'yellow' }
+        ];
+
+        function calculateResultColor(cubeColor, filterColor) {
+            const mixRules = {
+                'cyan-yellow': 'green',
+                'magenta-yellow': 'red',
+                'cyan-magenta': 'blue',
+                'red-cyan': 'darkred',
+                'green-magenta': 'darkgreen',
+                'blue-yellow': 'darkblue'
+            };
+            const key = [cubeColor, filterColor].sort().join('-');
+            return mixRules[key] || 'black';
+        }
+
+        // Variables du jeu
+        let currentQuestion = 0;
+        let score = 0;
+        let correctAnswer = '';
+        let animationInProgress = false;
+        let scene, camera, renderer, cube, filter, lights = [];
+        let animationId;
+
+        const startBtn = document.getElementById('start-btn');
+        const choices = document.getElementById('choices');
+        const message = document.getElementById('message');
+        const scoreDisplay = document.getElementById('score');
+
+        function hideInstructions() {
+            document.getElementById('instructions').classList.add('hidden');
+            initThreeJS();
+            
+            const controlsElement = document.getElementById('controls');
+            controlsElement.style.display = 'block';
+            
+            setTimeout(() => {
+                controlsElement.classList.add('visible');
+            }, 50);
+        }
+
+        function initThreeJS() {
+            const container = document.getElementById('canvas-container');
+            
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x000011);
+
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 2, 8);
+            camera.lookAt(0, 0, 0);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            container.appendChild(renderer.domElement);
+
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.3);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(10, 10, 5);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            scene.add(directionalLight);
+
+            const pointLight = new THREE.PointLight(0x66D9EF, 0.5, 100);
+            pointLight.position.set(-5, 5, 5);
+            scene.add(pointLight);
+
+            const cubeGeometry = new THREE.BoxGeometry(1.5, 1.5, 1.5);
+            const cubeMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0xff0000,
+                transparent: true,
+                opacity: 0.0,
+                shininess: 50,
+                specular: 0x333333
+            });
+            cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+            cube.position.set(-8, 0, 0);
+            cube.material.opacity = 0.0;
+            cube.castShadow = false;
+            scene.add(cube);
+
+            const filterGeometry = new THREE.PlaneGeometry(30, 30);
+            const filterMaterial = new THREE.MeshLambertMaterial({ 
+                color: 0xffff00, 
+                transparent: true, 
+                opacity: 0.0,
+                side: THREE.DoubleSide
+            });
+            filter = new THREE.Mesh(filterGeometry, filterMaterial);
+            filter.position.set(0, 0, 5);
+            filter.rotation.y = 0;
+            scene.add(filter);
+
+            const floorGeometry = new THREE.PlaneGeometry(20, 10);
+            const floorMaterial = new THREE.MeshLambertMaterial({ color: 0x1e1e2f });
+            const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+            floor.rotation.x = -Math.PI / 2;
+            floor.position.y = -2;
+            floor.receiveShadow = false;
+            scene.add(floor);
+
+            createParticles();
+            animate();
+        }
+
+        function createParticles() {
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particlesCount = 1000;
+            const positions = new Float32Array(particlesCount * 3);
+
+            for (let i = 0; i < particlesCount * 3; i++) {
+                positions[i] = (Math.random() - 0.5) * 100;
+            }
+
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            const particlesMaterial = new THREE.PointsMaterial({
+                color: 0x66D9EF,
+                size: 0.1,
+                transparent: true,
+                opacity: 0.6
+            });
+
+            const particles = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particles);
+        }
+
+        function animate() {
+            animationId = requestAnimationFrame(animate);
+            
+            if (cube) {
+                cube.rotation.x += 0.01;
+                cube.rotation.y += 0.01;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        function startAnimation() {
+            if (animationInProgress || currentQuestion >= questions.length) return;
+
+            animationInProgress = true;
+            startBtn.disabled = true;
+            message.textContent = '';
+
+            const question = questions[currentQuestion];
+            
+            cube.material.color.setHex(colorHexMap[question.cube]);
+            filter.material.color.setHex(colorHexMap[question.filter]);
+            correctAnswer = question.cube;
+            cube.position.x = -8;
+
+            const startTime = Date.now();
+            const duration = 4000;
+
+            function animateCube() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                const x = -8 + (progress * 12);
+                const y = Math.sin(progress * Math.PI * 2) * 0.5;
+                
+                cube.position.x = x;
+                cube.position.y = y;
+                
+                filter.material.opacity = 0.8;
+                
+                const resultColor = calculateResultColor(question.cube, question.filter);
+                cube.material.color.setHex(colorHexMap[resultColor]);
+                
+                if (resultColor.startsWith('dark')) {
+                    if (!cube.userData.spotLight) {
+                        const spotLight = new THREE.SpotLight(0xffffff, 1.5);
+                        spotLight.position.set(0, 5, 0);
+                        spotLight.lookAt(cube.position);
+                        spotLight.angle = Math.PI / 6;
+                        spotLight.penumbra = 0.5;
+                        scene.add(spotLight);
+                        cube.userData.spotLight = spotLight;
+                    }
+                    
+                    if (cube.userData.spotLight) {
+                        cube.userData.spotLight.position.x = x;
+                        cube.userData.spotLight.position.y = 5;
+                        cube.userData.spotLight.position.z = 0;
+                        cube.userData.spotLight.target = cube;
+                    }
+                } else {
+                    if (cube.userData.spotLight) {
+                        scene.remove(cube.userData.spotLight);
+                        cube.userData.spotLight = null;
+                    }
+                }
+                
+                if (progress > 0.3 && progress < 0.85) {
+                    if (resultColor.startsWith('dark')) {
+                        if (!cube.material.emissive) {
+                            cube.material.emissive = new THREE.Color(colorHexMap[resultColor]);
+                            cube.material.emissiveIntensity = 0.3;
+                        }
+                    }
+                    cube.material.opacity = 1.0;
+                } else {
+                    if (progress >= 0.85) {
+                        cube.material.opacity = Math.max(0, 1 - (progress - 0.85) * 6.66);
+                    } else if (progress <= 0.3) {
+                        cube.material.opacity = Math.min(1, progress * 3.33);
+                    } else {
+                        cube.material.opacity = 0.0;
+                    }
+                }
+
+                if (progress >= 0.95) {
+                    filter.material.opacity = Math.max(0, 0.8 - (progress - 0.95) * 16);
+                }
+
+                if (progress < 1) {
+                    requestAnimationFrame(animateCube);
+                } else {
+                    if (cube.userData.spotLight) {
+                        scene.remove(cube.userData.spotLight);
+                        cube.userData.spotLight = null;
+                    }
+                    animationInProgress = false;
+                    showChoices();
+                }
+            }
+
+            animateCube();
+        }
+
+        function showChoices() {
+            let otherColors = colors.filter(c => c !== correctAnswer);
+            otherColors = shuffleArray(otherColors).slice(0, 2);
+            
+            let choiceColors = [correctAnswer, otherColors[0], otherColors[1]];
+            choiceColors = shuffleArray(choiceColors);
+            
+            const choiceElements = [
+                document.getElementById('choiceA'),
+                document.getElementById('choiceB'),
+                document.getElementById('choiceC')
+            ];
+
+            choiceElements.forEach((choice, index) => {
+                const color = choiceColors[index];
+                choice.style.backgroundColor = `#${colorHexMap[color].toString(16).padStart(6, '0')}`;
+                choice.onclick = () => checkAnswer(color);
+            });
+
+            choices.style.display = 'flex';
+        }
+
+        function checkAnswer(selectedColor) {
+            if (animationInProgress) return;
+
+            const colorName = t(`colors.${selectedColor}`) || selectedColor;
+            const correctColorName = t(`colors.${correctAnswer}`) || correctAnswer;
+
+            if (selectedColor === correctAnswer) {
+                message.textContent = t('excellent');
+                message.style.color = "#66D9EF";
+                score++;
+            } else {
+                message.textContent = `${t('incorrect')} ${correctColorName}`;
+                message.style.color = "#ff6b6b";
+            }
+
+            currentQuestion++;
+            updateScoreDisplay();
+
+            choices.style.display = 'none';
+
+            if (currentQuestion >= questions.length) {
+                setTimeout(() => {
+                    message.textContent += ` ${t('quizCompleted')} ${score}/${questions.length}`;
+                    startBtn.style.display = 'none';
+                    
+                    const returnButton = document.createElement('button');
+                    returnButton.textContent = t('returnToGallery');
+                    returnButton.style.cssText = `
+                        background: linear-gradient(135deg, rgba(50, 50, 80, 0.8), rgba(80, 50, 100, 0.8));
+                        border: 2px solid rgba(255, 255, 255, 0.2);
+                        color: white;
+                        padding: 12px 25px;
+                        border-radius: 25px;
+                        cursor: pointer;
+                        margin-top: 20px;
+                        transition: all 0.3s ease;
+                        font-weight: bold;
+                    `;
+                    returnButton.onmouseover = () => {
+                        returnButton.style.transform = 'translateY(-2px) scale(1.02)';
+                        returnButton.style.boxShadow = '0 6px 20px rgba(0,0,0,0.4)';
+                        returnButton.style.background = 'linear-gradient(135deg, rgba(60, 60, 100, 0.9), rgba(100, 60, 130, 0.9))';
+                        returnButton.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+                    };
+                    returnButton.onmouseout = () => {
+                        returnButton.style.transform = '';
+                       returnButton.style.boxShadow = '';
+                       returnButton.style.background = 'linear-gradient(135deg, rgba(50, 50, 80, 0.8), rgba(80, 50, 100, 0.8))';
+                       returnButton.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                   };
+                   returnButton.onclick = () => {
+                       document.getElementById('exit-btn').click();
+                   };
+                   
+                   document.getElementById('controls').appendChild(returnButton);
+               }, 2000);
+           } else {
+               setTimeout(() => {
+                   startBtn.disabled = false;
+                   message.textContent = '';
+               }, 2000);
+           }
+       }
+
+       function shuffleArray(array) {
+           const newArray = [...array];
+           for (let i = newArray.length - 1; i > 0; i--) {
+               const j = Math.floor(Math.random() * (i + 1));
+               [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+           }
+           return newArray;
+       }
+
+       // Event listeners
+       startBtn.addEventListener('click', startAnimation);
+
+       document.getElementById('exit-btn').addEventListener('click', () => {
+           const overlay = document.createElement('div');
+           overlay.style.cssText = `
+               position: fixed;
+               top: 0;
+               left: 0;
+               width: 100%;
+               height: 100%;
+               background: black;
+               opacity: 0;
+               z-index: 10000;
+               transition: opacity 1s ease;
+               display: flex;
+               align-items: center;
+               justify-content: center;
+               color: white;
+               font-size: 24px;
+               font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+           `;
+           overlay.innerHTML = t('returningToGallery');
+           document.body.appendChild(overlay);
+
+           setTimeout(() => {
+               overlay.style.opacity = '1';
+               setTimeout(() => {
+                   window.location.href = 'gallery.html';
+               }, 1000);
+           }, 100);
+       });
+
+       // Responsive
+       window.addEventListener('resize', () => {
+           if (camera && renderer) {
+               camera.aspect = window.innerWidth / window.innerHeight;
+               camera.updateProjectionMatrix();
+               renderer.setSize(window.innerWidth, window.innerHeight);
+           }
+       });
+
+       // 🔥 POINT CLÉ: Initialiser la traduction dès le chargement de la page
+       document.addEventListener('DOMContentLoaded', initializeLanguage);
+       
+       // Fallback au cas où DOMContentLoaded serait déjà passé
+       if (document.readyState === 'loading') {
+           document.addEventListener('DOMContentLoaded', initializeLanguage);
+       } else {
+           initializeLanguage();
+       }
+   </script>
+</body>
+</html>
