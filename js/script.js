@@ -134,7 +134,7 @@ class AudioManager {
     updateSoundButton() {
         const soundButton = document.querySelector('#sound-button');
         if (!soundButton) return;
-        
+
         if (this.audio && this.isPlaying && !this.audio.paused) {
             soundButton.innerHTML = '🔊';
             soundButton.style.background = 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)';
@@ -557,23 +557,40 @@ class VariablePaceIntroduction {
         this.showStep(0);
     }
 
+    // Amélioration de la méthode end() pour un nettoyage plus complet
     end() {
-        const existingStep = document.querySelector('.intro-step');
-        const existingArrow = document.getElementById('intro-next');
+        // Liste de tous les sélecteurs à supprimer 
+        const selectorsToRemove = [
+            '.intro-step',
+            '#intro-next',
+            '#skip-gallery-button',
+            '#bottom-text-panel',
+            '#explanation-panel',
+            '#bottom-panel',
+            '.explanation-content',
+            '.explanation-overlay'
+        ];
 
-        if (existingStep) {
-            existingStep.style.opacity = '0';
-            setTimeout(() => {
-                existingStep.remove();
-            }, 500);
-        }
+        // Supprimer tous les éléments
+        selectorsToRemove.forEach(selector => {
+            const elements = document.querySelectorAll(selector);
+            elements.forEach(el => {
+                // Animation de disparition
+                el.style.opacity = '0';
+                el.style.transition = 'opacity 0.3s ease';
 
-        if (existingArrow) {
-            existingArrow.style.opacity = '0';
-            setTimeout(() => {
-                existingArrow.remove();
-            }, 500);
-        }
+                // Puis suppression complète
+                setTimeout(() => {
+                    if (el.parentNode) {
+                        el.remove();
+                    }
+                }, 300);
+            });
+        });
+
+        // Réinitialiser l'état
+        this.currentStep = 0;
+        this.navigationEnabled = false;
     }
 }
 
@@ -1023,60 +1040,90 @@ function startPortalApproach() {
     console.log('Approche du portail interdimensionnel');
     transitionState = 'approaching_portal';
 
-    // Terminer l'introduction
+    // Terminer l'introduction et supprimer tous les éléments d'interface
     if (variableIntroduction) {
+        variableIntroduction.end();
     }
 
-    if (window.gsap) {
-        const tl = gsap.timeline();
+    // Supprimer le bouton skip
+    const skipButton = document.getElementById('skip-gallery-button');
+    if (skipButton) {
+        skipButton.style.opacity = '0';
+        setTimeout(() => skipButton.remove(), 300);
+    }
 
-        tl.to(camera.position, {
-            duration: 3,
-            z: 1.5,
-            ease: "power2.inOut",
-            onUpdate: () => {
-                const progress = 1 - (camera.position.z - 1.5) / 2.5;
-                portalShaderMaterial.uniforms.cameraProgress.value = progress * 0.3;
-            }
-        })
+    // Supprimer tous les éléments d'interface persistants
+    const elementsToRemove = [
+        '.intro-step',
+        '#intro-next',
+        '#bottom-text-panel',
+        '#explanation-panel',
+        '#bottom-panel',
+        '.explanation-content',
+        '.explanation-overlay'
+    ];
 
-            .to(camera.position, {
-                duration: 2,
-                z: -2,
+    elementsToRemove.forEach(selector => {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach(el => {
+            el.style.opacity = '0';
+            setTimeout(() => el.remove(), 300);
+        });
+    });
+
+    // Attendre que tous les éléments soient bien nettoyés
+    setTimeout(() => {
+        if (window.gsap) {
+            const tl = gsap.timeline();
+
+            tl.to(camera.position, {
+                duration: 3,
+                z: 1.5,
                 ease: "power2.inOut",
                 onUpdate: () => {
-                    const progress = Math.max(0, 1 - (camera.position.z + 2) / 3.5);
-                    portalShaderMaterial.uniforms.cameraProgress.value = 0.3 + progress * 0.7;
-                    portalShaderMaterial.uniforms.blur.value = progress * 3;
+                    const progress = 1 - (camera.position.z - 1.5) / 2.5;
+                    portalShaderMaterial.uniforms.cameraProgress.value = progress * 0.3;
                 }
             })
 
-            .to({}, {
-                duration: 1,
-                onStart: () => {
-                    transitionState = 'transitioning';
-                    const finalOverlay = document.createElement('div');
-                    finalOverlay.style.cssText = `
-                    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                    background: black; opacity: 0; z-index: 9999;
-                    transition: opacity 1.5s ease; display: flex;
-                    align-items: center; justify-content: center;
-                    color: white; font-size: 24px; font-family: "Segoe UI", sans-serif;
-                `;
-                    finalOverlay.innerHTML = t('transitionToGallery');
-                    document.body.appendChild(finalOverlay);
+                .to(camera.position, {
+                    duration: 2,
+                    z: -2,
+                    ease: "power2.inOut",
+                    onUpdate: () => {
+                        const progress = Math.max(0, 1 - (camera.position.z + 2) / 3.5);
+                        portalShaderMaterial.uniforms.cameraProgress.value = 0.3 + progress * 0.7;
+                        portalShaderMaterial.uniforms.blur.value = progress * 3;
+                    }
+                })
 
-                    setTimeout(() => finalOverlay.style.opacity = '1', 100);
-                    setTimeout(() => {
-                        window.location.href = 'gallery.html';
-                    }, 1500);
-                }
-            });
-    } else {
-        setTimeout(() => {
-            window.location.href = 'gallery.html';
-        }, 3000);
-    }
+                .to({}, {
+                    duration: 1,
+                    onStart: () => {
+                        transitionState = 'transitioning';
+                        const finalOverlay = document.createElement('div');
+                        finalOverlay.style.cssText = `
+                        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                        background: black; opacity: 0; z-index: 9999;
+                        transition: opacity 1.5s ease; display: flex;
+                        align-items: center; justify-content: center;
+                        color: white; font-size: 24px; font-family: "Segoe UI", sans-serif;
+                    `;
+                        finalOverlay.innerHTML = t('transitionToGallery');
+                        document.body.appendChild(finalOverlay);
+
+                        setTimeout(() => finalOverlay.style.opacity = '1', 100);
+                        setTimeout(() => {
+                            window.location.href = 'gallery.html';
+                        }, 1500);
+                    }
+                });
+        } else {
+            setTimeout(() => {
+                window.location.href = 'gallery.html';
+            }, 3000);
+        }
+    }, 500); // Délai pour s'assurer que tous les éléments sont nettoyés
 }
 
 // Initialisation de tous les éléments 3D
@@ -1467,7 +1514,7 @@ function createMenuElements() {
     playButton.addEventListener('click', (event) => {
         event.preventDefault();
         console.log('Lancement de l\'expérience demandé par l\'utilisateur');
-        
+
         // Démarrer la musique en fade-in UNIQUEMENT si l'utilisateur n'a pas explicitement désactivé le son
         if (audioManager && localStorage.getItem('colorPerceptionAudio')) {
             // Vérifier les préférences sauvegardées
@@ -1484,7 +1531,7 @@ function createMenuElements() {
             // Comportement par défaut pour un nouvel utilisateur (première visite)
             audioManager.fadeIn(1500);
         }
-        
+
         startGalleryTransition();
     });
 
@@ -1551,31 +1598,34 @@ function createMenuElements() {
                 }
             }
         },
-        {
-            key: 'about',
+        { 
+            key: 'about', 
             action: () => {
                 // Afficher les informations sur le projet
                 const aboutModal = document.createElement('div');
                 aboutModal.style.cssText = `
-                   position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                   background: rgba(0, 0, 0, 0.8); z-index: 1000; display: flex;
-                   align-items: center; justify-content: center; padding: 20px;
-               `;
+                    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                    background: rgba(0, 0, 0, 0.8); z-index: 1000; display: flex;
+                    align-items: center; justify-content: center; padding: 20px;
+                `;
                 aboutModal.innerHTML = `
-                   <div style="background: white; padding: 30px; border-radius: 15px; max-width: 500px;">
-                       <h2 style="margin: 0 0 15px 0; color: #333;">${currentLanguage === 'fr' ? 'À propos du projet' : 'About the project'}</h2>
-                       <p style="line-height: 1.6; color: #666; margin-bottom: 20px;">
-                           ${currentLanguage === 'fr' ?
-                        'Ce projet explore les illusions d\'optique liées à la perception des couleurs, créé par Néha et Dounia dans le cadre d\'un projet tuteuré universitaire.' :
-                        'This project explores optical illusions related to color perception, created by Néha and Dounia as part of a university tutored project.'
-                    }
-                       </p>
-                       <button onclick="this.parentElement.parentElement.remove()" style="
-                           background: #667eea; color: white; border: none; padding: 10px 20px;
-                           border-radius: 5px; cursor: pointer; float: right;
-                       ">${currentLanguage === 'fr' ? 'Fermer' : 'Close'}</button>
-                   </div>
-               `;
+                    <div style="background: white; padding: 30px; border-radius: 15px; max-width: 500px;">
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                            <img src="images/logo.png" alt="Logo" style="width: 50px; height: 50px; object-fit: contain; border-radius: 8px;">
+                            <h2 style="margin: 0; color: #333; flex: 1;">${currentLanguage === 'fr' ? 'À propos du projet' : 'About the project'}</h2>
+                        </div>
+                        <p style="line-height: 1.6; color: #666; margin-bottom: 20px;">
+                            ${currentLanguage === 'fr' ? 
+                                'Ce projet explore les illusions d\'optique liées à la perception des couleurs, créé par Néha et Dounia dans le cadre d\'un projet tuteuré universitaire.' :
+                                'This project explores optical illusions related to color perception, created by Néha and Dounia as part of a university tutored project.'
+                            }
+                        </p>
+                        <button onclick="this.parentElement.parentElement.remove()" style="
+                            background: #667eea; color: white; border: none; padding: 10px 20px;
+                            border-radius: 5px; cursor: pointer; float: right;
+                        ">${currentLanguage === 'fr' ? 'Fermer' : 'Close'}</button>
+                    </div>
+                `;
                 document.body.appendChild(aboutModal);
                 aboutModal.addEventListener('click', (e) => {
                     if (e.target === aboutModal) aboutModal.remove();
